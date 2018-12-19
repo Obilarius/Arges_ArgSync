@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Exchange.WebServices.Data;
 using System.IO;
+using System.Diagnostics;
 
 namespace Redemption
 {
@@ -31,12 +32,18 @@ namespace Redemption
             service = ExchangeConnect(username, password, domain, SMTPAdresse, exUri);
             if (service != null)
             {
-                var PublicContactFolder = getPublicFolder(ContactFolderName);
-                var MailboxContactFolder = getMailboxFolder(ContactFolderName);
+                var PublicContactFolder = getPublicFolder();
+
+                writeLog("---------- SyncRun Start ----------");
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+
 
                 #region LOCAL SYNC
                 bool isEndOfChanges = false;
                 var localSyncState = getSyncState(false, SMTPAdresse); // Ist null falls Initialer SyncRun
+
+                var MailboxContactFolder = getMailboxFolder(localSyncState == null);
 
                 do
                 {
@@ -122,8 +129,16 @@ namespace Redemption
                         {
                             if (ic.ChangeType == ChangeType.Create)
                             {
-                                Contact contacts = Contact.Bind(service, ic.ItemId);
-                                contacts.Copy(MailboxContactFolder.Id);
+                                try
+                                {
+                                    Contact contacts = Contact.Bind(service, ic.ItemId);
+                                    contacts.Copy(MailboxContactFolder.Id);
+                                }
+                                catch (Exception ex)
+                                {
+                                    writeLog(ic.Item.Subject + " - " + ex.Message);
+                                }
+                                
 
 
                                 //// Retrieve a collection of all the mail (limited to 10 items) in the Inbox. View the extended property.
@@ -227,37 +242,48 @@ namespace Redemption
                 writeSyncState(sSyncStateLocal, false, SMTPAdresse);
                 #endregion
 
+                stopWatch.Stop();
+                writeLog("---------- SyncRun End - "+ stopWatch.Elapsed +" ----------");
+
             }
         }
 
-        public Folder getPublicFolder(string FolderName)
+        public Folder getPublicFolder()
         {
             var PublicRoot = Folder.Bind(service, WellKnownFolderName.PublicFoldersRoot);
-            SearchFilter.IsEqualTo filter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, FolderName);
+            SearchFilter.IsEqualTo filter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, ContactFolderName);
             FindFoldersResults FindPublicContactFolder = service.FindFolders(PublicRoot.Id, filter, new FolderView(1));
             return FindPublicContactFolder.Folders[0];
         }
 
-        public Folder getMailboxFolder(string FolderName, bool init = false)
+        public Folder getMailboxFolder(bool init = false)
         {
             var MailboxContactRoot = Folder.Bind(service, WellKnownFolderName.Contacts);
-            SearchFilter.IsEqualTo filter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, FolderName);
+            SearchFilter.IsEqualTo filter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, ContactFolderName);
             FindFoldersResults FindMailboxContactFolder = service.FindFolders(MailboxContactRoot.Id, filter, new FolderView(1));
 
             Folder MailboxContactFolder;
             if (FindMailboxContactFolder.TotalCount != 0)
             {
-                // löscht den Kontakt Ordner falls er beim Initialen SyncRun vorhanden ist
-                //if (init)
-                //{
-                //    FindMailboxContactFolder.Folders[0].Delete(DeleteMode.HardDelete);
-                //}
-                MailboxContactFolder = FindMailboxContactFolder.Folders[0];
+                //löscht den Kontakt Ordner falls er beim Initialen SyncRun vorhanden ist
+                if (init)
+                {
+                    FindMailboxContactFolder.Folders[0].Delete(DeleteMode.HardDelete);
+
+                    ContactsFolder folder = new ContactsFolder(service);
+                    folder.DisplayName = ContactFolderName;
+                    folder.Save(MailboxContactRoot.Id);
+                    MailboxContactFolder = folder;
+                }
+                else
+                {
+                    MailboxContactFolder = FindMailboxContactFolder.Folders[0];
+                }
             }
             else
             {
                 ContactsFolder folder = new ContactsFolder(service);
-                folder.DisplayName = FolderName;
+                folder.DisplayName = ContactFolderName;
                 folder.Save(MailboxContactRoot.Id);
                 MailboxContactFolder = folder;
             }

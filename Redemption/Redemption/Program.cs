@@ -28,8 +28,8 @@ namespace Redemption
                             var smtp = parts[i][0].Trim(' ');
                             var folder = parts[i][1].Trim(' ');
 
-                            //var SyncRun = new ExchangeSync(smtp, folder);
-                            //SyncRun.Sync();
+                            var SyncRun = new ExchangeSync(smtp, folder);
+                            SyncRun.Sync();
                         }
                     }
                 }
