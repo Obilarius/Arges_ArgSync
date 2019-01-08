@@ -1,48 +1,90 @@
-﻿using System;
+﻿using Microsoft.Exchange.WebServices.Data;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace Redemption
 {
-    [XmlRoot("MatchingList")]
-    [XmlInclude(typeof(ContactEntry))]
     public class MatchingList
     {
-        [XmlArray("MatchingArray")]
-        [XmlArrayItem("MatchingObjekt")]
-        public List<ContactEntry> ContactEntry = new List<ContactEntry>();
-
-        // Konstruktoren 
-        public MatchingList() { }
-
-        public void AddEntry(ContactEntry contactEntry)
+        public static void Create (ExchangeService service, string SMTPAdresse, string ContactFolderName)
         {
-            ContactEntry.Add(contactEntry);
+            if (service != null)
+            {
+
+                var path = "MatchingList/" + SMTPAdresse + "_" + ContactFolderName + "_matchingList.xml";
+
+                var PublicRoot = Folder.Bind(service, WellKnownFolderName.Contacts);
+                SearchFilter.IsEqualTo filter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, ContactFolderName);
+                FindFoldersResults FindPublicContactFolder = service.FindFolders(PublicRoot.Id, filter, new FolderView(1));
+                var ContactFolder = FindPublicContactFolder.Folders[0];
+
+                Guid MyPropertySetId = new Guid("{57616c7a-656e-6261-6368-536173636861}");
+                ExtendedPropertyDefinition extendedPropertyDefinition = new ExtendedPropertyDefinition(MyPropertySetId, "PublicID", MapiPropertyType.String);
+
+                // EXTENDED PROP READ
+                ItemView view = new ItemView(int.MaxValue);
+                view.PropertySet = new PropertySet(BasePropertySet.IdOnly, ItemSchema.Subject, extendedPropertyDefinition);
+                FindItemsResults<Item> findResults;
+
+                var matchingList = new List<Matching>();
+
+                do
+                {
+                    findResults = service.FindItems(ContactFolder.Id, view);
+
+                    foreach (Item item in findResults.Items)
+                    {
+                        string PublicID;
+                        if (item.ExtendedProperties.Count > 0)
+                        {
+                            // Display the extended name and value of the extended property.
+                            item.TryGetProperty(extendedPropertyDefinition, out PublicID);
+
+                            var entry = new Matching(item.Subject, PublicID, item.Id.UniqueId);
+                            matchingList.Add(entry);
+                        }
+                    }
+
+                    view.Offset += findResults.Items.Count;
+                } while (findResults.MoreAvailable == true);
+
+
+
+                if (!Directory.Exists("MatchingList"))
+                {
+                    Directory.CreateDirectory("MatchingList");
+                }
+
+                try
+                {
+                    XMLReader.saveToXml(path, matchingList);
+                }
+                catch (Exception ex)
+                {
+                    //writeLog("MatchingList: " + ex.Message);
+                }
+
+
+            }
         }
     }
 
-
-    [XmlType("ContactEntry")]
-    public class ContactEntry
+    public class Matching
     {
-        [XmlAttribute("Subjekt", DataType = "string")]
-        public string Subjekt { get; set; }
-
-        [XmlElement("PublicId")]
-        public string PublicId { get; set; }
-
-        [XmlElement("MailboxId")]
         public string MailboxId { get; set; }
+        public string PublicId { get; set; }
+        public string Subject { get; set; }
 
         // Konstruktoren 
-        public ContactEntry() { }
+        public Matching() { }
 
-        public ContactEntry(string subject, string publicId, string mailboxId)
+        public Matching(string subject, string publicId, string mailboxId)
         {
-            this.Subjekt = subject;
+            this.Subject = subject;
             this.PublicId = publicId;
             this.MailboxId = mailboxId;
         }

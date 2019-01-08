@@ -10,23 +10,20 @@ using System.Xml.Serialization;
 
 namespace Redemption
 {
-    class ExchangeSync
+
+    public class ExchangeSync
     {
         ExchangeService service = null;
 
-        String password = "redemption";
-        String username = "redemption";
-        String domain = "arges";
-        String exUri = "https://helios.arges.local/EWS/Exchange.asmx";
         String SMTPAdresse;
         String ContactFolderName;
 
 
-        public ExchangeSync(string _SMTPAdresse, string _ContactFolderName)
+        public ExchangeSync(ExchangeService _service, string _SMTPAdresse, string _ContactFolderName)
         {
             SMTPAdresse = _SMTPAdresse;
             ContactFolderName = _ContactFolderName;
-            service = ExchangeConnect(username, password, domain, SMTPAdresse, exUri);
+            service = _service;
         }
 
         public bool Sync()
@@ -273,18 +270,7 @@ namespace Redemption
             return MailboxContactFolder;
         }
 
-        public ExchangeService ExchangeConnect(string username, string password, string domain, string smtpAdresse, string exUri)
-        {
-            ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2013);
-            service.Credentials = new WebCredentials(username, password, domain);
-
-            //service.AutodiscoverUrl("walzenbach@arges.de");
-            service.Url = new Uri(exUri);
-
-            service.ImpersonatedUserId = new ImpersonatedUserId(ConnectingIdType.SmtpAddress, smtpAdresse);
-
-            return service;
-        }
+        
 
         public string getSyncState(bool isPublic, string smtpAdresse)
         {
@@ -354,78 +340,6 @@ namespace Redemption
             Console.CursorLeft = 51;
             Console.Write("] " + percent + "%");
             Console.WriteLine();
-        }
-
-        public void createMatchingList()
-        {
-            if (service != null)
-            {
-
-                var path = "MatchingList/" + SMTPAdresse + "_" + ContactFolderName + "_matchingList.xml";
-
-                var PublicRoot = Folder.Bind(service, WellKnownFolderName.Contacts);
-                SearchFilter.IsEqualTo filter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, ContactFolderName);
-                FindFoldersResults FindPublicContactFolder = service.FindFolders(PublicRoot.Id, filter, new FolderView(1));
-                var ContactFolder = FindPublicContactFolder.Folders[0];
-
-                Guid MyPropertySetId = new Guid("{57616c7a-656e-6261-6368-536173636861}");
-                ExtendedPropertyDefinition extendedPropertyDefinition = new ExtendedPropertyDefinition(MyPropertySetId, "PublicID", MapiPropertyType.String);
-
-                // EXTENDED PROP READ
-                ItemView view = new ItemView(int.MaxValue);
-                view.PropertySet = new PropertySet(BasePropertySet.IdOnly, ItemSchema.Subject, extendedPropertyDefinition);
-                FindItemsResults<Item> findResults;
-
-                MatchingList matchingList = new MatchingList();
-
-                ContactEntry entry = null;
-
-
-                do
-                {
-                    findResults = service.FindItems(ContactFolder.Id, view);
-
-                    foreach (Item item in findResults.Items)
-                    {
-                        string PublicID;
-                        if (item.ExtendedProperties.Count > 0)
-                        {
-                            // Display the extended name and value of the extended property.
-                            item.TryGetProperty(extendedPropertyDefinition, out PublicID);
-
-                            entry = null;
-                            entry = new ContactEntry(item.Subject, PublicID, item.Id.UniqueId);
-                            matchingList.AddEntry(entry);
-                        }
-                    }
-
-                    view.Offset += findResults.Items.Count;
-                } while (findResults.MoreAvailable == true);
-
-                
-
-                if (!Directory.Exists("MatchingList"))
-                {
-                    Directory.CreateDirectory("MatchingList");
-                }
-
-                try
-                {
-                    // Serialize 
-                    Type[] entryTypes = { entry.GetType() };
-                    XmlSerializer serializer = new XmlSerializer(matchingList.GetType(), entryTypes);
-                    FileStream fs = new FileStream(path, FileMode.Create);
-                    serializer.Serialize(fs, matchingList);
-                    fs.Close();
-                    matchingList = null;
-                }
-                catch (Exception ex)
-                {
-                    writeLog("MatchingList: " + ex.Message);
-                }
-                
-
-            }
         }
 
         public void writePublicIdInExProp()
