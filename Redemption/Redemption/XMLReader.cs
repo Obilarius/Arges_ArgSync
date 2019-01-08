@@ -30,14 +30,14 @@ namespace Redemption
             }
         }
 
-        public static List<Matching> readFromXml ()
+        public static List<Matching> readFromXml (string path)
         {
             List<Matching> _list = null;
 
             try
             {
                 _list = (
-                        from e in XDocument.Load("test2.xml").Root.Elements("MatchingEntry")
+                        from e in XDocument.Load(path).Root.Elements("MatchingEntry")
                         select new Matching
                         {
                             MailboxId = (string)e.Element("MailboxId"),

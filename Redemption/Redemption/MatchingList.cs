@@ -59,17 +59,17 @@ namespace Redemption
                     Directory.CreateDirectory("MatchingList");
                 }
 
-                try
-                {
-                    XMLReader.saveToXml(path, matchingList);
-                }
-                catch (Exception ex)
-                {
-                    //writeLog("MatchingList: " + ex.Message);
-                }
-
-
+                XMLReader.saveToXml(path, matchingList);
             }
+        }
+
+        public static List<Matching> GetList (string SMTPAdresse, string ContactFolderName)
+        {
+            var path = "MatchingList/" + SMTPAdresse + "_" + ContactFolderName + "_matchingList.xml";
+
+            List<Matching> _list = null;
+            _list = XMLReader.readFromXml(path);
+            return _list;
         }
     }
 

@@ -86,7 +86,30 @@ namespace Redemption
                             }
                             else if (ic_mailbox.ChangeType == ChangeType.Delete)
                             {
-                                writeLog("DELETE LOCAL: " + ic_mailbox.ItemId.UniqueId);
+                                var MailboxId = ic_mailbox.ItemId.UniqueId;
+
+                                List<Matching> matchingList = MatchingList.GetList(SMTPAdresse, ContactFolderName);
+
+                                if (matchingList != null)
+                                {
+                                    try
+                                    {
+                                        Matching result = matchingList.Find(x => x.MailboxId == MailboxId);
+
+                                        Contact contacts = Contact.Bind(service, result.PublicId);
+                                        contacts.Copy(MailboxContactFolder.Id);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        writeLog(ex.Message);
+                                    }
+                                }
+                                else
+                                {
+                                    writeLog(SMTPAdresse + " - Mailbox MatchingListe konnte nicht geladen werden");
+                                }
+
+
                                 //Contact contacts = Contact.Bind(service, ic_mailbox.ItemId.UniqueId);
 
                                 //SearchFilter.IsEqualTo filter2 = new SearchFilter.IsEqualTo(ItemSchema.Subject, contacts.Subject);
@@ -269,8 +292,6 @@ namespace Redemption
 
             return MailboxContactFolder;
         }
-
-        
 
         public string getSyncState(bool isPublic, string smtpAdresse)
         {
