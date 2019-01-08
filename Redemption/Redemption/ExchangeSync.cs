@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Exchange.WebServices.Data;
 using System.IO;
 using System.Diagnostics;
+using System.Xml.Serialization;
 
 namespace Redemption
 {
@@ -25,11 +26,13 @@ namespace Redemption
         {
             SMTPAdresse = _SMTPAdresse;
             ContactFolderName = _ContactFolderName;
+            service = ExchangeConnect(username, password, domain, SMTPAdresse, exUri);
         }
 
-        public void Sync()
+        public bool Sync()
         {
-            service = ExchangeConnect(username, password, domain, SMTPAdresse, exUri);
+            var changeValue = false;
+
             if (service != null)
             {
                 var PublicContactFolder = getPublicFolder();
@@ -51,7 +54,7 @@ namespace Redemption
 
                     if (icc_mailbox.Count != 0)
                     {
-                        //Folder MailboxFolder = Folder.Bind(service, MailboxContactFolder.Id);
+                        changeValue = true;
                         foreach (ItemChange ic_mailbox in icc_mailbox)
                         {
                             if (ic_mailbox.ChangeType == ChangeType.Create)
@@ -66,17 +69,27 @@ namespace Redemption
                                 Contact contacts = Contact.Bind(service, ic_mailbox.ItemId);
 
                                 SearchFilter.IsEqualTo filter2 = new SearchFilter.IsEqualTo(ItemSchema.Subject, contacts.Subject);
-                                FindItemsResults<Item> findResults = service.FindItems(PublicContactFolder.Id, filter2, new ItemView(1));
-                                contacts.Delete(DeleteMode.HardDelete);
-                                foreach (Contact item in findResults.Items)
-                                {
-                                    item.Copy(MailboxContactFolder.Id);
-                                }
 
-                                Console.WriteLine(SMTPAdresse + " - LocalChange " + contacts.Subject + " was updated locally and removed automatically");
+                                try
+                                {
+                                    FindItemsResults<Item> findResults = service.FindItems(PublicContactFolder.Id, filter2, new ItemView(1));
+                                    contacts.Delete(DeleteMode.HardDelete);
+                                    foreach (Contact item in findResults.Items)
+                                    {
+                                        item.Copy(MailboxContactFolder.Id);
+                                    }
+
+                                    Console.WriteLine(SMTPAdresse + " - LocalChange " + contacts.Subject + " was updated locally and removed automatically");
+                                }
+                                catch (Exception ex)
+                                {
+                                    writeLog(ex.Message);
+                                }
+                                
                             }
                             else if (ic_mailbox.ChangeType == ChangeType.Delete)
                             {
+                                writeLog("DELETE LOCAL: " + ic_mailbox.ItemId.UniqueId);
                                 //Contact contacts = Contact.Bind(service, ic_mailbox.ItemId.UniqueId);
 
                                 //SearchFilter.IsEqualTo filter2 = new SearchFilter.IsEqualTo(ItemSchema.Subject, contacts.Subject);
@@ -87,9 +100,6 @@ namespace Redemption
                                 //}
                             }
 
-                            //var OutputText = ic_mailbox.ChangeType.ToString() + " - ";
-                            //if (ic_mailbox.Item != null) { OutputText += ic_mailbox.Item.Subject; }
-                            //Console.WriteLine(OutputText);
                         }
 
                         Console.WriteLine(icc_mailbox.Count + " changes in own mailbox folder");
@@ -109,8 +119,6 @@ namespace Redemption
                 var sSyncState = getSyncState(true, SMTPAdresse);
                 var index = 0;
 
-                if (index > 513 && sSyncState == null)
-                    throw new NullReferenceException();
 
                 do
                 {
@@ -122,7 +130,7 @@ namespace Redemption
                     }
                     else
                     {
-
+                        changeValue = true;
                         writeLog(SMTPAdresse + " - " + icc.Count + " changes in public folder");
 
                         foreach (ItemChange ic in icc)
@@ -139,31 +147,6 @@ namespace Redemption
                                     writeLog(ic.Item.Subject + " - " + ex.Message);
                                 }
                                 
-
-
-                                //// Retrieve a collection of all the mail (limited to 10 items) in the Inbox. View the extended property.
-                                //ItemView view = new ItemView(10000);
-                                //PropertySet PropertySet = new PropertySet(BasePropertySet.FirstClassProperties);
-
-                                //Guid MyPropertySetId = new Guid("{00062004-0000-0000-C000-000000000046}");
-                                //ExtendedPropertyDefinition extendedPropertyDefinitionUser4 = new ExtendedPropertyDefinition(MyPropertySetId, 0x8051, MapiPropertyType.String);
-                                //PropertySet.Add(extendedPropertyDefinitionUser4);
-                                //view.PropertySet = PropertySet;
-                                //FindItemsResults<Item> findResults = service.FindItems(MailboxContactFolder.Id, view);
-
-                                //foreach (Item item in findResults.Items)
-                                //{
-                                //    var User4 = string.Empty;
-                                //    item.TryGetProperty(extendedPropertyDefinitionUser4, out User4);
-
-                                //    if (User4 != "")
-                                //    {
-                                //        item.SetExtendedProperty(extendedPropertyDefinitionUser4, contacts.Id.ChangeKey);
-                                //        item.Update(ConflictResolutionMode.AlwaysOverwrite);
-                                //    }
-                                //}
-
-                                //Console.WriteLine(SMTPAdresse + " -" + index + " - PublicChange " + contacts.Subject + " was created in public and copied to the mailbox");
                             }
                             else if (ic.ChangeType == ChangeType.Update)
                             {
@@ -177,7 +160,7 @@ namespace Redemption
                                     contacts.Copy(MailboxContactFolder.Id);
                                 }
 
-                                //Console.WriteLine(SMTPAdresse + " - " + index + " - PublicChange " + contacts.Subject + " was updated in public and updated in the mailbox");
+                                Console.WriteLine(SMTPAdresse + " - " + index + " - PublicChange " + contacts.Subject + " was updated in public and updated in the mailbox");
                             }
                             else if (ic.ChangeType == ChangeType.Delete)
                             {
@@ -192,10 +175,6 @@ namespace Redemption
                                 //{
                                 //    item.Delete(DeleteMode.HardDelete);
                                 //}
-                            }
-                            else if (ic.ChangeType == ChangeType.ReadFlagChange)
-                            {
-                                //TODO: Update the item's read flag on the client.
                             }
 
 
@@ -212,7 +191,7 @@ namespace Redemption
                         }
                     }
 
-                    // TODO Könnte sein das ich den Hash erst nach der Do Schleife schreiben darf  // Dateischreibzugriffe in Variable verschieben
+                    
                     sSyncState = icc.SyncState;
 
                     if (!icc.MoreChangesAvailable)
@@ -245,7 +224,10 @@ namespace Redemption
                 stopWatch.Stop();
                 writeLog("---------- SyncRun End - "+ stopWatch.Elapsed +" ----------");
 
+
+                
             }
+            return changeValue;
         }
 
         public Folder getPublicFolder()
@@ -373,5 +355,131 @@ namespace Redemption
             Console.Write("] " + percent + "%");
             Console.WriteLine();
         }
+
+        public void createMatchingList()
+        {
+            if (service != null)
+            {
+
+                var path = "MatchingList/" + SMTPAdresse + "_" + ContactFolderName + "_matchingList.xml";
+
+                var PublicRoot = Folder.Bind(service, WellKnownFolderName.Contacts);
+                SearchFilter.IsEqualTo filter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, ContactFolderName);
+                FindFoldersResults FindPublicContactFolder = service.FindFolders(PublicRoot.Id, filter, new FolderView(1));
+                var ContactFolder = FindPublicContactFolder.Folders[0];
+
+                Guid MyPropertySetId = new Guid("{57616c7a-656e-6261-6368-536173636861}");
+                ExtendedPropertyDefinition extendedPropertyDefinition = new ExtendedPropertyDefinition(MyPropertySetId, "PublicID", MapiPropertyType.String);
+
+                // EXTENDED PROP READ
+                ItemView view = new ItemView(int.MaxValue);
+                view.PropertySet = new PropertySet(BasePropertySet.IdOnly, ItemSchema.Subject, extendedPropertyDefinition);
+                FindItemsResults<Item> findResults;
+
+                MatchingList matchingList = new MatchingList();
+
+                ContactEntry entry = null;
+
+
+                do
+                {
+                    findResults = service.FindItems(ContactFolder.Id, view);
+
+                    foreach (Item item in findResults.Items)
+                    {
+                        string PublicID;
+                        if (item.ExtendedProperties.Count > 0)
+                        {
+                            // Display the extended name and value of the extended property.
+                            item.TryGetProperty(extendedPropertyDefinition, out PublicID);
+
+                            entry = null;
+                            entry = new ContactEntry(item.Subject, PublicID, item.Id.UniqueId);
+                            matchingList.AddEntry(entry);
+                        }
+                    }
+
+                    view.Offset += findResults.Items.Count;
+                } while (findResults.MoreAvailable == true);
+
+                
+
+                if (!Directory.Exists("MatchingList"))
+                {
+                    Directory.CreateDirectory("MatchingList");
+                }
+
+                try
+                {
+                    // Serialize 
+                    Type[] entryTypes = { entry.GetType() };
+                    XmlSerializer serializer = new XmlSerializer(matchingList.GetType(), entryTypes);
+                    FileStream fs = new FileStream(path, FileMode.Create);
+                    serializer.Serialize(fs, matchingList);
+                    fs.Close();
+                    matchingList = null;
+                }
+                catch (Exception ex)
+                {
+                    writeLog("MatchingList: " + ex.Message);
+                }
+                
+
+            }
+        }
+
+        public void writePublicIdInExProp()
+        {
+            if (service != null)
+            {
+                var PublicRoot = Folder.Bind(service, WellKnownFolderName.PublicFoldersRoot);
+                SearchFilter.IsEqualTo filter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, ContactFolderName);
+                FindFoldersResults FindPublicContactFolder = service.FindFolders(PublicRoot.Id, filter, new FolderView(1));
+                var ContactFolder = FindPublicContactFolder.Folders[0];
+
+                Guid MyPropertySetId = new Guid("{57616c7a-656e-6261-6368-536173636861}");
+                ExtendedPropertyDefinition extendedPropertyDefinition = new ExtendedPropertyDefinition(MyPropertySetId, "PublicID", MapiPropertyType.String);
+
+                // EXTENDED PROP READ
+                ItemView view = new ItemView(int.MaxValue);
+                view.PropertySet = new PropertySet(BasePropertySet.IdOnly, ItemSchema.Subject, extendedPropertyDefinition);
+                FindItemsResults<Item> findResults;
+
+                var index = 0;
+                do
+                {
+                    findResults = service.FindItems(ContactFolder.Id, view);
+
+                    foreach (Item item in findResults.Items)
+                    {
+                        string PublicID;
+                        if (item.ExtendedProperties.Count > 0)
+                        {
+                            item.TryGetProperty(extendedPropertyDefinition, out PublicID);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                Contact contact = Contact.Bind(service, item.Id);
+                                contact.SetExtendedProperty(extendedPropertyDefinition, item.Id.UniqueId);
+                                contact.Update(ConflictResolutionMode.AlwaysOverwrite);
+
+                                Console.WriteLine(index + " - " + item.Subject + " - UniqueId in extendedProp geschrieben.");
+                            }
+                            catch (Exception)
+                            {
+                            }
+                        }
+
+                        index++;
+                    }
+
+                    view.Offset += findResults.Items.Count;
+                } while (findResults.MoreAvailable == true);
+
+            }
+        }
+
     }
 }

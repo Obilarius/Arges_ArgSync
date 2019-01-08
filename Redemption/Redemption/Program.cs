@@ -29,7 +29,13 @@ namespace Redemption
                             var folder = parts[i][1].Trim(' ');
 
                             var SyncRun = new ExchangeSync(smtp, folder);
-                            SyncRun.Sync();
+                            SyncRun.writePublicIdInExProp();
+                            bool changes = SyncRun.Sync();
+
+                            if (changes)
+                            {
+                                SyncRun.createMatchingList();
+                            }
                         }
                     }
                 }
@@ -37,6 +43,9 @@ namespace Redemption
             }
             else
                 throw new FileNotFoundException();
+
+            //Console.WriteLine("Press Key to Exit");
+            //Console.ReadKey();
         }
     }
 }
