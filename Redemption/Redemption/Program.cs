@@ -12,51 +12,24 @@ namespace Redemption
 {
     class Program
     {
-        
-
         static void Main(string[] args)
         {
-            String password = "redemption";
-            String username = "redemption";
-            String domain = "arges";
-            String exUri = "https://helios.arges.local/EWS/Exchange.asmx";
+            config config = ReadConfig();
 
-            var file = "config.cfg";
-            if (File.Exists(file))
+
+            foreach (var m in config.mailboxes)
             {
-                string[] lines = File.ReadAllLines(file);
-                string[][] parts = new string[lines.Length][];
+                ExchangeService service = ExchangeConnect(config.username, config.password, config.domain, m.smtpAdresse, config.exUri);
+                var SyncRun = new ExchangeSync(service, m.smtpAdresse, m.folder);
 
-                for (int i = 0; i < lines.Length; i++)
+                SyncRun.writePublicIdInExProp();
+                bool changes = SyncRun.Sync();
+
+                if (changes)
                 {
-                    if (!string.IsNullOrEmpty(lines[i])) // Leere Zeile in Config
-                    {
-                        if (lines[i].Substring(0, 1) != "#") // Kommentar in der Config
-                        {
-                            parts[i] = lines[i].Split(';');
-
-                            var smtp = parts[i][0].Trim(' ');
-                            var folder = parts[i][1].Trim(' ');
-                            ExchangeService service = ExchangeConnect(username, password, domain, smtp, exUri);
-
-                            var SyncRun = new ExchangeSync(service, smtp, folder);
-                            SyncRun.writePublicIdInExProp();
-                            bool changes = SyncRun.Sync();
-
-                            if (changes)
-                            {
-                                MatchingList.Create(service, smtp, folder);
-                            }
-                        }
-                    }
+                    MatchingList.Create(service, m.smtpAdresse, m.folder);
                 }
-
             }
-            else
-                throw new FileNotFoundException();
-
-            //Console.WriteLine("Press Key to Exit");
-            //Console.ReadKey();
         }
 
         public static ExchangeService ExchangeConnect(string username, string password, string domain, string smtpAdresse, string exUri)
@@ -119,28 +92,6 @@ namespace Redemption
                 throw new FileNotFoundException();
 
             return config;
-        }
-    }
-
-    public class config
-    {
-        public string password, username, domain, exUri;
-        public List<syncMailboxes> mailboxes = new List<syncMailboxes>();
-
-        public void AddMailbox(string v1, string v2)
-        {
-            mailboxes.Add(new syncMailboxes(v1, v2));
-        }
-    }
-
-    public class syncMailboxes
-    {
-        public string smtpAdresse, folder;
-
-        public syncMailboxes (string smtpAdresse, string folder)
-        {
-            this.smtpAdresse = smtpAdresse;
-            this.folder = folder;
         }
     }
 }
