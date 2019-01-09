@@ -184,7 +184,28 @@ namespace Redemption
                             }
                             else if (ic.ChangeType == ChangeType.Delete)
                             {
+                                var PublicId = ic.ItemId.UniqueId;
 
+                                List<Matching> matchingList = MatchingList.GetList(SMTPAdresse, ContactFolderName);
+
+                                if (matchingList != null)
+                                {
+                                    try
+                                    {
+                                        Matching result = matchingList.Find(x => x.PublicId == PublicId);
+
+                                        Contact contacts = Contact.Bind(service, result.MailboxId);
+                                        contacts.Delete(DeleteMode.HardDelete);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        writeLog(ex.Message);
+                                    }
+                                }
+                                else
+                                {
+                                    writeLog(SMTPAdresse + " - Mailbox MatchingListe konnte nicht geladen werden");
+                                }
 
 
                                 //Contact contacts = Contact.Bind(service, ic.ItemId);
@@ -296,7 +317,7 @@ namespace Redemption
         public string getSyncState(bool isPublic, string smtpAdresse)
         {
             String SyncState = null;
-            String path = "SyncStates/" + smtpAdresse + "_" + ContactFolderName;
+            String path = "SyncStates/" + smtpAdresse + "/" + ContactFolderName;
             if (isPublic)
             {
                 path += "_public";
@@ -314,7 +335,7 @@ namespace Redemption
 
         public void writeSyncState(string syncState, bool isPublic, string smtpAdresse)
         {
-            String path = "SyncStates/" + smtpAdresse + "_" + ContactFolderName;
+            String path = "SyncStates/" + smtpAdresse + "/" + ContactFolderName;
             if (isPublic)
             {
                 path += "_public";
@@ -324,6 +345,10 @@ namespace Redemption
             if (!Directory.Exists("SyncStates"))
             {
                 Directory.CreateDirectory("SyncStates");
+            }
+            if (!Directory.Exists("SyncStates/" + smtpAdresse))
+            {
+                Directory.CreateDirectory("SyncStates/" + smtpAdresse);
             }
             StreamWriter SyncStateWriter = new StreamWriter(path);
             SyncStateWriter.Write(syncState);
