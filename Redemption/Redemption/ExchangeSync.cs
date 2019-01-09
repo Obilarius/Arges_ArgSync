@@ -59,7 +59,7 @@ namespace Redemption
                                 Contact contacts = Contact.Bind(service, ic_mailbox.ItemId);
                                 contacts.Delete(DeleteMode.HardDelete);
 
-                                Console.WriteLine(SMTPAdresse + " - LocalChange " + contacts.Subject + " was created locally and removed automatically");
+                                //Console.WriteLine(SMTPAdresse + " - LocalChange " + contacts.Subject + " was created locally and removed automatically");
                             }
                             else if (ic_mailbox.ChangeType == ChangeType.Update)
                             {
@@ -76,7 +76,7 @@ namespace Redemption
                                         item.Copy(MailboxContactFolder.Id);
                                     }
 
-                                    Console.WriteLine(SMTPAdresse + " - LocalChange " + contacts.Subject + " was updated locally and removed automatically");
+                                    //Console.WriteLine(SMTPAdresse + " - LocalChange " + contacts.Subject + " was updated locally and removed automatically");
                                 }
                                 catch (Exception ex)
                                 {
@@ -122,7 +122,7 @@ namespace Redemption
 
                         }
 
-                        Console.WriteLine(icc_mailbox.Count + " changes in own mailbox folder");
+                        //Console.WriteLine(icc_mailbox.Count + " changes in own mailbox folder");
                         writeLog(SMTPAdresse + " - " + icc_mailbox.Count + " changes in own mailbox folder");
                     }
 
@@ -180,7 +180,7 @@ namespace Redemption
                                     contacts.Copy(MailboxContactFolder.Id);
                                 }
 
-                                Console.WriteLine(SMTPAdresse + " - " + index + " - PublicChange " + contacts.Subject + " was updated in public and updated in the mailbox");
+                                //Console.WriteLine(SMTPAdresse + " - " + index + " - PublicChange " + contacts.Subject + " was updated in public and updated in the mailbox");
                             }
                             else if (ic.ChangeType == ChangeType.Delete)
                             {
@@ -224,9 +224,9 @@ namespace Redemption
                             //var percent = Math.Floor(Remap(index, 0, icc.Count, 1, 100));
                             //showProgressBar((int)percent);
 
-                            var OutputText = index + " - " + ic.ChangeType.ToString() + " - ";
-                            if (ic.Item != null) { OutputText += ic.Item.Subject; }
-                            Console.WriteLine(OutputText);
+                            //var OutputText = index + " - " + ic.ChangeType.ToString() + " - ";
+                            //if (ic.Item != null) { OutputText += ic.Item.Subject; }
+                            //Console.WriteLine(OutputText);
 
                             index++;
                         }
@@ -425,7 +425,7 @@ namespace Redemption
                                 contact.SetExtendedProperty(extendedPropertyDefinition, item.Id.UniqueId);
                                 contact.Update(ConflictResolutionMode.AlwaysOverwrite);
 
-                                Console.WriteLine(index + " - " + item.Subject + " - UniqueId in extendedProp geschrieben.");
+                                //Console.WriteLine(index + " - " + item.Subject + " - UniqueId in extendedProp geschrieben.");
                             }
                             catch (Exception)
                             {
