@@ -16,6 +16,7 @@ namespace Redemption
         {
             config config = ReadConfig();
 
+            ExchangeSync.writeLog("##################################################################");
 
             foreach (var m in config.mailboxes)
             {
@@ -28,6 +29,7 @@ namespace Redemption
                 if (changes)
                 {
                     MatchingList.Create(service, m.smtpAdresse, m.folder);
+                    ExchangeSync.writeLog("Matching List created: " + m.smtpAdresse + " - " + m.folder);
                 }
             }
         }

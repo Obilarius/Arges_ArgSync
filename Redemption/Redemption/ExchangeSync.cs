@@ -34,7 +34,7 @@ namespace Redemption
             {
                 var PublicContactFolder = getPublicFolder();
 
-                writeLog("---------- SyncRun Start ----------");
+                writeLog("---------- SyncRun Start - "+ ContactFolderName +" ----------");
                 Stopwatch stopWatch = new Stopwatch();
                 stopWatch.Start();
 
@@ -88,36 +88,18 @@ namespace Redemption
                             {
                                 var MailboxId = ic_mailbox.ItemId.UniqueId;
 
-                                List<Matching> matchingList = MatchingList.GetList(SMTPAdresse, ContactFolderName);
-
-                                if (matchingList != null)
+                                try
                                 {
-                                    try
-                                    {
-                                        Matching result = matchingList.Find(x => x.MailboxId == MailboxId);
+                                    List<Matching> matchingList = MatchingList.GetList(SMTPAdresse, ContactFolderName);
+                                    Matching result = matchingList.Find(x => x.MailboxId == MailboxId);
 
-                                        Contact contacts = Contact.Bind(service, result.PublicId);
-                                        contacts.Copy(MailboxContactFolder.Id);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        writeLog(ex.Message);
-                                    }
+                                    Contact contacts = Contact.Bind(service, result.PublicId);
+                                    contacts.Copy(MailboxContactFolder.Id);
                                 }
-                                else
+                                catch (Exception ex)
                                 {
-                                    writeLog(SMTPAdresse + " - Mailbox MatchingListe konnte nicht geladen werden");
+                                    writeLog(ex.Message);
                                 }
-
-
-                                //Contact contacts = Contact.Bind(service, ic_mailbox.ItemId.UniqueId);
-
-                                //SearchFilter.IsEqualTo filter2 = new SearchFilter.IsEqualTo(ItemSchema.Subject, contacts.Subject);
-                                //FindItemsResults<Item> findResults = service.FindItems(PublicContactFolder.Id, filter2, new ItemView(1));
-                                //foreach (Contact item in findResults.Items)
-                                //{
-                                //    item.Copy(MailboxContactFolder.Id);
-                                //}
                             }
 
                         }
@@ -227,6 +209,11 @@ namespace Redemption
                             //var OutputText = index + " - " + ic.ChangeType.ToString() + " - ";
                             //if (ic.Item != null) { OutputText += ic.Item.Subject; }
                             //Console.WriteLine(OutputText);
+
+                            if (index % 50 == 0)
+                            {
+                                Console.WriteLine("SyncIndex: " + index);
+                            }
 
                             index++;
                         }
@@ -355,7 +342,7 @@ namespace Redemption
             SyncStateWriter.Close();
         }
 
-        public void writeLog(string logText)
+        public static void writeLog(string logText)
         {
             if (!Directory.Exists("log"))
             {

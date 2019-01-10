@@ -17,16 +17,26 @@ namespace Redemption
                 //WRITE XML
                 var doc = new XDocument();
 
-                doc.Add(new XElement("MatchingList", list.Select(x => new XElement("MatchingEntry",
-                        new XAttribute("Subject", x.Subject),
-                        new XElement("PublicId", x.PublicId),
-                        new XElement("MailboxId", x.MailboxId)))));
+                //doc.Add(new XElement("MatchingList", list.Select(x => new XElement("MatchingEntry",
+                //        new XAttribute("Subject", x.Subject),
+                //        new XElement("PublicId", x.PublicId),
+                //        new XElement("MailboxId", x.MailboxId)))));
 
+                XElement xml = new XElement("MatchingList",
+                                from p in list
+                                select new XElement("MatchingEntry",
+                                            new XElement("Subject", p.Subject),
+                                            new XElement("PublicId", p.PublicId),
+                                            new XElement("MailboxId", p.MailboxId)));
+
+                doc.Add(xml);
                 doc.Save(path);
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine("ERROR: " + ex.Message);
+                ExchangeSync.writeLog("ERROR: " + ex.Message);
             }
         }
 
@@ -42,13 +52,14 @@ namespace Redemption
                         {
                             MailboxId = (string)e.Element("MailboxId"),
                             PublicId = (string)e.Element("PublicId"),
-                            Subject = (string)e.Attribute("Subject")
+                            Subject = (string)e.Element("Subject")
                         }
                     ).ToList();
             }
             catch (Exception ex)
             {
                 Console.WriteLine("ERROR: " + ex.Message);
+                ExchangeSync.writeLog("ERROR: " + ex.Message);
             }
 
             return _list;
