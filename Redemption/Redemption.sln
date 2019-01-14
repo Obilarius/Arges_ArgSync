@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "Testing\Testing.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigEditor", "ConfigEditor\ConfigEditor.csproj", "{AB7B737D-6FD3-480F-A826-03FEFA94A498}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogViewer", "LogViewer\LogViewer.csproj", "{6743C8AB-C99A-4202-A8AD-BB40EFA8E040}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{AB7B737D-6FD3-480F-A826-03FEFA94A498}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB7B737D-6FD3-480F-A826-03FEFA94A498}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB7B737D-6FD3-480F-A826-03FEFA94A498}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6743C8AB-C99A-4202-A8AD-BB40EFA8E040}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6743C8AB-C99A-4202-A8AD-BB40EFA8E040}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6743C8AB-C99A-4202-A8AD-BB40EFA8E040}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6743C8AB-C99A-4202-A8AD-BB40EFA8E040}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
