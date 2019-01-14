@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redemption", "Redemption\Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "Testing\Testing.csproj", "{06ACF94E-A8E1-4923-A880-70A1C2A97D88}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigEditor", "ConfigEditor\ConfigEditor.csproj", "{AB7B737D-6FD3-480F-A826-03FEFA94A498}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{06ACF94E-A8E1-4923-A880-70A1C2A97D88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06ACF94E-A8E1-4923-A880-70A1C2A97D88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06ACF94E-A8E1-4923-A880-70A1C2A97D88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB7B737D-6FD3-480F-A826-03FEFA94A498}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB7B737D-6FD3-480F-A826-03FEFA94A498}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB7B737D-6FD3-480F-A826-03FEFA94A498}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB7B737D-6FD3-480F-A826-03FEFA94A498}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

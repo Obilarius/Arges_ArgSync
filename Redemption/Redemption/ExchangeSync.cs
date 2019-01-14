@@ -52,6 +52,8 @@ namespace Redemption
                     if (icc_mailbox.Count != 0)
                     {
                         changeValue = true;
+                        writeLog(SMTPAdresse + " - " + icc_mailbox.Count + " changes in own mailbox folder");
+
                         foreach (ItemChange ic_mailbox in icc_mailbox)
                         {
                             if (ic_mailbox.ChangeType == ChangeType.Create)
@@ -80,7 +82,7 @@ namespace Redemption
                                 }
                                 catch (Exception ex)
                                 {
-                                    writeLog(ex.Message);
+                                    writeLog("ExchangeSync.cs - 85: "+ex.Message);
                                 }
                                 
                             }
@@ -98,15 +100,14 @@ namespace Redemption
                                 }
                                 catch (Exception ex)
                                 {
-                                    writeLog(ex.Message);
+                                    writeLog("ExchangeSync.cs - 103: " + ex.Message);
                                 }
                             }
-
                         }
-
                         //Console.WriteLine(icc_mailbox.Count + " changes in own mailbox folder");
-                        writeLog(SMTPAdresse + " - " + icc_mailbox.Count + " changes in own mailbox folder");
                     }
+
+                    localSyncState = icc_mailbox.SyncState;
 
                     if (!icc_mailbox.MoreChangesAvailable)
                     {
@@ -114,6 +115,8 @@ namespace Redemption
                     }
 
                 } while (!isEndOfChanges);
+
+                writeSyncState(localSyncState, false, SMTPAdresse);
                 #endregion
 
                 #region PUBLIC SYNC
@@ -146,7 +149,7 @@ namespace Redemption
                                 }
                                 catch (Exception ex)
                                 {
-                                    writeLog(ic.Item.Subject + " - " + ex.Message);
+                                    writeLog("ExchangeSync.cs - 152: " + ic.Item.Subject + " - " + ex.Message);
                                 }
                                 
                             }
@@ -181,7 +184,7 @@ namespace Redemption
                                     }
                                     catch (Exception ex)
                                     {
-                                        writeLog(ex.Message);
+                                        writeLog("ExchangeSync.cs - 187: " + ex.Message);
                                     }
                                 }
                                 else
@@ -199,12 +202,6 @@ namespace Redemption
                                 //    item.Delete(DeleteMode.HardDelete);
                                 //}
                             }
-
-
-                            // AUSGABE IN CONSOLE
-                            //Console.CursorTop = 1;
-                            //var percent = Math.Floor(Remap(index, 0, icc.Count, 1, 100));
-                            //showProgressBar((int)percent);
 
                             //var OutputText = index + " - " + ic.ChangeType.ToString() + " - ";
                             //if (ic.Item != null) { OutputText += ic.Item.Subject; }
@@ -247,6 +244,8 @@ namespace Redemption
                 } while (!isEndOfChangesLocal);
 
                 writeSyncState(sSyncStateLocal, false, SMTPAdresse);
+
+                //writeSyncState(localSyncState, false, SMTPAdresse);
                 #endregion
 
                 stopWatch.Stop();

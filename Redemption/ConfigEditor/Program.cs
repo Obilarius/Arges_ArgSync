@@ -1,50 +1,27 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using Microsoft.Exchange.WebServices.Data;
-using System.Configuration;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
-namespace Redemption
+namespace ConfigEditor
 {
-    class Program
+    static class Program
     {
-        static void Main(string[] args)
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
         {
-            Config config = ReadConfig();
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new ConfigEditor());
 
-            ExchangeSync.writeLog("##################################################################");
-
-            foreach (var m in config.mailboxes)
-            {
-                ExchangeService service = ExchangeConnect(config.username, config.password, config.domain, m.smtpAdresse, config.exUri);
-                var SyncRun = new ExchangeSync(service, m.smtpAdresse, m.folder);
-
-                SyncRun.writePublicIdInExProp();
-                bool changes = SyncRun.Sync();
-
-                if (changes)
-                {
-                    MatchingList.Create(service, m.smtpAdresse, m.folder);
-                    ExchangeSync.writeLog("Matching List created: " + m.smtpAdresse + " - " + m.folder);
-                }
-            }
         }
 
-        public static ExchangeService ExchangeConnect(string username, string password, string domain, string smtpAdresse, string exUri)
-        {
-            ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2013);
-            service.Credentials = new WebCredentials(username, password, domain);
-
-            service.Url = new Uri(exUri);
-
-            service.ImpersonatedUserId = new ImpersonatedUserId(ConnectingIdType.SmtpAddress, smtpAdresse);
-
-            return service;
-        }
 
         static Config ReadConfig()
         {
@@ -68,7 +45,7 @@ namespace Redemption
                             {
                                 index = 1;
                             }
-                            else if (lines[i].StartsWith("[SYNCRONIZED MAILBOXES]")) 
+                            else if (lines[i].StartsWith("[SYNCRONIZED MAILBOXES]"))
                             {
                                 index = 2;
                             }

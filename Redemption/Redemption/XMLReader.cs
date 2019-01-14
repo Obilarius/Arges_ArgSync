@@ -35,8 +35,8 @@ namespace Redemption
             }
             catch (Exception ex)
             {
-                Console.WriteLine("ERROR: " + ex.Message);
-                ExchangeSync.writeLog("ERROR: " + ex.Message);
+                //Console.WriteLine("XMLReader.cs - 38: "+ex.Message);
+                ExchangeSync.writeLog("XMLReader.cs - 38: " + ex.Message);
             }
         }
 
@@ -58,8 +58,8 @@ namespace Redemption
             }
             catch (Exception ex)
             {
-                Console.WriteLine("ERROR: " + ex.Message);
-                ExchangeSync.writeLog("ERROR: " + ex.Message);
+                //Console.WriteLine("ERROR: " + ex.Message);
+                ExchangeSync.writeLog("XMLReader.cs - 62: " + ex.Message);
             }
 
             return _list;
