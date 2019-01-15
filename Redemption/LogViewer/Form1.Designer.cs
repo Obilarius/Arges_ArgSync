@@ -33,7 +33,7 @@
             this.lst_logView = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.btn_reload = new System.Windows.Forms.Button();
+            this.lbl_openTime = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btn_openFileDialog
@@ -71,22 +71,22 @@
             this.columnHeader2.Text = "Text";
             this.columnHeader2.Width = 1000;
             // 
-            // btn_reload
+            // lbl_openTime
             // 
-            this.btn_reload.Location = new System.Drawing.Point(107, 13);
-            this.btn_reload.Name = "btn_reload";
-            this.btn_reload.Size = new System.Drawing.Size(75, 23);
-            this.btn_reload.TabIndex = 2;
-            this.btn_reload.Text = "Reload";
-            this.btn_reload.UseVisualStyleBackColor = true;
-            this.btn_reload.Click += new System.EventHandler(this.btn_reload_Click);
+            this.lbl_openTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbl_openTime.Location = new System.Drawing.Point(488, 18);
+            this.lbl_openTime.Name = "lbl_openTime";
+            this.lbl_openTime.Size = new System.Drawing.Size(300, 13);
+            this.lbl_openTime.TabIndex = 2;
+            this.lbl_openTime.Text = "No Log Opened";
+            this.lbl_openTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.btn_reload);
+            this.Controls.Add(this.lbl_openTime);
             this.Controls.Add(this.btn_openFileDialog);
             this.Controls.Add(this.lst_logView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -103,7 +103,7 @@
         private System.Windows.Forms.ListView lst_logView;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.Button btn_reload;
+        private System.Windows.Forms.Label lbl_openTime;
     }
 }
 

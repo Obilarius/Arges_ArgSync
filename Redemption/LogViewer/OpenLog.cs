@@ -49,5 +49,13 @@ namespace LogViewer
             logPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName) + @"\log\" + selectedLog.SubItems[0].Text + "-" + selectedLog.SubItems[1].Text + "_Log.txt";
 
         }
+
+        private void lst_showLogs_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ListViewItem selectedLog = lst_showLogs.SelectedItems[0];
+            logPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName) + @"\log\" + selectedLog.SubItems[0].Text + "-" + selectedLog.SubItems[1].Text + "_Log.txt";
+            this.DialogResult = DialogResult.OK;
+            this.Close();
+        }
     }
 }

@@ -32,8 +32,8 @@
             this.lst_showLogs = new System.Windows.Forms.ListView();
             this.Jahr = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Monat = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.button1 = new System.Windows.Forms.Button();
             this.path = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lst_showLogs
@@ -54,6 +54,7 @@
             this.lst_showLogs.UseCompatibleStateImageBehavior = false;
             this.lst_showLogs.View = System.Windows.Forms.View.Details;
             this.lst_showLogs.SelectedIndexChanged += new System.EventHandler(this.lst_showLogs_SelectedIndexChanged);
+            this.lst_showLogs.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lst_showLogs_MouseDoubleClick);
             // 
             // Jahr
             // 
@@ -65,6 +66,11 @@
             this.Monat.Text = "Monat";
             this.Monat.Width = 95;
             // 
+            // path
+            // 
+            this.path.Text = "path";
+            this.path.Width = 0;
+            // 
             // button1
             // 
             this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
@@ -75,11 +81,6 @@
             this.button1.TabIndex = 1;
             this.button1.Text = "Open Log";
             this.button1.UseVisualStyleBackColor = true;
-            // 
-            // path
-            // 
-            this.path.Text = "path";
-            this.path.Width = 0;
             // 
             // OpenLog
             // 

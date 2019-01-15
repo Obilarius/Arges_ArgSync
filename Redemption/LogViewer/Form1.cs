@@ -35,13 +35,26 @@ namespace LogViewer
                     path = openLogForm.logPath;
 
                     openLog();
+
+                    lbl_openTime.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
+
+                    FileSystemWatcher watcher = new FileSystemWatcher();
+                    watcher.Path = Path.GetDirectoryName(path);
+                    watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+                    watcher.Filter = Path.GetFileName(path);
+                    watcher.SynchronizingObject = this;
+                    watcher.Changed += new FileSystemEventHandler(OnChanged);
+                    watcher.EnableRaisingEvents = true;
+
                 }
             }
         }
 
-        private void btn_reload_Click(object sender, EventArgs e)
+        private void OnChanged(object source, FileSystemEventArgs e)
         {
             openLog();
+
+            lbl_openTime.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
         }
 
         private void openLog ()
@@ -49,33 +62,43 @@ namespace LogViewer
             string line;
 
             // Read the file and display it line by line.  
-            System.IO.StreamReader file = new System.IO.StreamReader(path);
-            while ((line = file.ReadLine()) != null)
+            try
             {
-                var date = line.Substring(0, 19);
-                var text = line.Substring(22);
-                ListViewItem lvi;
+                StreamReader file = new StreamReader(path);
 
-                switch (text)
+                while ((line = file.ReadLine()) != null)
                 {
-                    case var someVal when new Regex(@"^[#]+$").IsMatch(someVal):
-                        lvi = new ListViewItem(new string[] { date, "" });
-                        lvi.BackColor = Color.Blue;
-                        lvi.ForeColor = Color.White;
-                        break;
-                    case var someVal when new Regex(@"SyncRun (Start|End)").IsMatch(someVal):
-                        lvi = new ListViewItem(new string[] { date, text });
-                        lvi.BackColor = Color.Aquamarine;
-                        break;
-                    default:
-                        lvi = new ListViewItem(new string[] { date, text });
-                        break;
+                    var date = line.Substring(0, 19);
+                    var text = line.Substring(22);
+                    ListViewItem lvi;
+
+                    switch (text)
+                    {
+                        case var someVal when new Regex(@"^[#]+$").IsMatch(someVal):
+                            lvi = new ListViewItem(new string[] { date, "" });
+                            lvi.BackColor = Color.Blue;
+                            lvi.ForeColor = Color.White;
+                            break;
+                        case var someVal when new Regex(@"SyncRun (Start|End)").IsMatch(someVal):
+                            lvi = new ListViewItem(new string[] { date, text });
+                            lvi.BackColor = Color.Aquamarine;
+                            break;
+                        default:
+                            lvi = new ListViewItem(new string[] { date, text });
+                            break;
+                    }
+
+                    lst_logView.Items.Add(lvi);
+                    lst_logView.Items[lst_logView.Items.Count - 1].EnsureVisible();
                 }
 
-                lst_logView.Items.Add(lvi);
+                file.Close();
             }
-
-            file.Close();
+            catch (Exception ex)
+            {
+                lbl_openTime.Text = ex.Message;
+            }
         }
     }
 }
+

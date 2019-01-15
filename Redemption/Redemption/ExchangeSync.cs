@@ -82,7 +82,7 @@ namespace Redemption
                                 }
                                 catch (Exception ex)
                                 {
-                                    writeLog("ExchangeSync.cs - 85: "+ex.Message);
+                                    writeLog("ERROR: ExchangeSync.cs - 85: "+ex.Message);
                                 }
                                 
                             }
@@ -100,7 +100,7 @@ namespace Redemption
                                 }
                                 catch (Exception ex)
                                 {
-                                    writeLog("ExchangeSync.cs - 103: " + ex.Message);
+                                    writeLog("ERROR: ExchangeSync.cs - 103: " + ex.Message);
                                 }
                             }
                         }
@@ -149,7 +149,7 @@ namespace Redemption
                                 }
                                 catch (Exception ex)
                                 {
-                                    writeLog("ExchangeSync.cs - 152: " + ic.Item.Subject + " - " + ex.Message);
+                                    writeLog("ERROR: ExchangeSync.cs - 152: " + ic.Item.Subject + " - " + ex.Message);
                                 }
                                 
                             }
@@ -184,7 +184,7 @@ namespace Redemption
                                     }
                                     catch (Exception ex)
                                     {
-                                        writeLog("ExchangeSync.cs - 187: " + ex.Message);
+                                        writeLog("ERROR: ExchangeSync.cs - 187: " + ex.Message);
                                     }
                                 }
                                 else
