@@ -62,41 +62,90 @@ namespace LogViewer
             string line;
 
             // Read the file and display it line by line.  
-            try
+            //try
+            //{
+            //    StreamReader file = new StreamReader(path);
+
+            //    while ((line = file.ReadLine()) != null)
+            //    {
+            //        var date = line.Substring(0, 19);
+            //        var text = line.Substring(22);
+            //        ListViewItem lvi;
+
+            //        switch (text)
+            //        {
+            //            case var someVal when new Regex(@"^[#]+$").IsMatch(someVal):
+            //                lvi = new ListViewItem(new string[] { date, "" });
+            //                lvi.BackColor = Color.Blue;
+            //                lvi.ForeColor = Color.White;
+            //                break;
+            //            case var someVal when new Regex(@"SyncRun (Start|End)").IsMatch(someVal):
+            //                lvi = new ListViewItem(new string[] { date, text });
+            //                lvi.BackColor = Color.Aquamarine;
+            //                break;
+            //            case var someVal when new Regex(@"ERROR:").IsMatch(someVal):
+            //                lvi = new ListViewItem(new string[] { date, text });
+            //                lvi.BackColor = Color.Red;
+            //                break;
+            //            default:
+            //                lvi = new ListViewItem(new string[] { date, text });
+            //                break;
+            //        }
+
+            //        lst_logView.Items.Add(lvi);
+            //        lst_logView.Items[lst_logView.Items.Count - 1].EnsureVisible();
+            //    }
+
+            //    file.Close();
+            //}
+            //catch (Exception ex)
+            //{
+            //    lbl_openTime.Text = ex.Message;
+            //}
+
+            var Lines = ReadLines(path);
+
+            foreach (var l in Lines)
             {
-                StreamReader file = new StreamReader(path);
+                var date = l.Substring(0, 19);
+                var text = l.Substring(22);
+                ListViewItem lvi;
 
-                while ((line = file.ReadLine()) != null)
+                switch (text)
                 {
-                    var date = line.Substring(0, 19);
-                    var text = line.Substring(22);
-                    ListViewItem lvi;
-
-                    switch (text)
-                    {
-                        case var someVal when new Regex(@"^[#]+$").IsMatch(someVal):
-                            lvi = new ListViewItem(new string[] { date, "" });
-                            lvi.BackColor = Color.Blue;
-                            lvi.ForeColor = Color.White;
-                            break;
-                        case var someVal when new Regex(@"SyncRun (Start|End)").IsMatch(someVal):
-                            lvi = new ListViewItem(new string[] { date, text });
-                            lvi.BackColor = Color.Aquamarine;
-                            break;
-                        default:
-                            lvi = new ListViewItem(new string[] { date, text });
-                            break;
-                    }
-
-                    lst_logView.Items.Add(lvi);
-                    lst_logView.Items[lst_logView.Items.Count - 1].EnsureVisible();
+                    case var someVal when new Regex(@"^[#]+$").IsMatch(someVal):
+                        lvi = new ListViewItem(new string[] { date, "" });
+                        lvi.BackColor = Color.Blue;
+                        lvi.ForeColor = Color.White;
+                        break;
+                    case var someVal when new Regex(@"SyncRun (Start|End)").IsMatch(someVal):
+                        lvi = new ListViewItem(new string[] { date, text });
+                        lvi.BackColor = Color.Aquamarine;
+                        break;
+                    case var someVal when new Regex(@"ERROR:").IsMatch(someVal):
+                        lvi = new ListViewItem(new string[] { date, text });
+                        lvi.BackColor = Color.Red;
+                        break;
+                    default:
+                        lvi = new ListViewItem(new string[] { date, text });
+                        break;
                 }
 
-                file.Close();
+                lst_logView.Items.Add(lvi);
+                lst_logView.Items[lst_logView.Items.Count - 1].EnsureVisible();
             }
-            catch (Exception ex)
+        }
+
+        public static IEnumerable<string> ReadLines(string path)
+        {
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x1000, FileOptions.SequentialScan))
+            using (var sr = new StreamReader(fs, Encoding.UTF8))
             {
-                lbl_openTime.Text = ex.Message;
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    yield return line;
+                }
             }
         }
     }
