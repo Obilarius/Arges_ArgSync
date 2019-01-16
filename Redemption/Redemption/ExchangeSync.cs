@@ -58,19 +58,27 @@ namespace Redemption
                         {
                             if (ic_mailbox.ChangeType == ChangeType.Create)
                             {
-                                Contact contacts = Contact.Bind(service, ic_mailbox.ItemId);
-                                contacts.Delete(DeleteMode.HardDelete);
+                                try
+                                {
+                                    Contact contacts = Contact.Bind(service, ic_mailbox.ItemId);
+                                    contacts.Delete(DeleteMode.HardDelete);
+                                }
+                                catch (Exception ex)
+                                {
+                                    writeLog("ERROR: LocalSync Create: " + ex.Message);
+                                }
+                                
 
                                 //Console.WriteLine(SMTPAdresse + " - LocalChange " + contacts.Subject + " was created locally and removed automatically");
                             }
                             else if (ic_mailbox.ChangeType == ChangeType.Update)
                             {
-                                Contact contacts = Contact.Bind(service, ic_mailbox.ItemId);
-
-                                SearchFilter.IsEqualTo filter2 = new SearchFilter.IsEqualTo(ItemSchema.Subject, contacts.Subject);
-
                                 try
                                 {
+                                    Contact contacts = Contact.Bind(service, ic_mailbox.ItemId);
+
+                                    SearchFilter.IsEqualTo filter2 = new SearchFilter.IsEqualTo(ItemSchema.Subject, contacts.Subject);
+
                                     FindItemsResults<Item> findResults = service.FindItems(PublicContactFolder.Id, filter2, new ItemView(1));
                                     contacts.Delete(DeleteMode.HardDelete);
                                     foreach (Contact item in findResults.Items)
@@ -82,7 +90,7 @@ namespace Redemption
                                 }
                                 catch (Exception ex)
                                 {
-                                    writeLog("ERROR: ExchangeSync.cs - 85: "+ex.Message);
+                                    writeLog("ERROR: LocalSync Update: " + ex.Message);
                                 }
                                 
                             }
@@ -100,7 +108,7 @@ namespace Redemption
                                 }
                                 catch (Exception ex)
                                 {
-                                    writeLog("ERROR: ExchangeSync.cs - 103: " + ex.Message);
+                                    writeLog("ERROR: LocalSync Delete: " + ex.Message);
                                 }
                             }
                         }
