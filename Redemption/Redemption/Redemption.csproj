@@ -51,7 +51,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <ApplicationIcon>arges_sync.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>81DCDD918A98063FE2D0888715B098BC2FE87D05</ManifestCertificateThumbprint>
@@ -91,13 +91,11 @@
     <Compile Include="XMLReader.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="config.cfg" />
     <None Include="Properties\app.manifest" />
-    <None Include="Redemption_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="favicon.ico" />
+    <Content Include="arges_sync.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">

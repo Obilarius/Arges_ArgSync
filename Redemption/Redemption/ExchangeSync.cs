@@ -320,9 +320,11 @@ namespace Redemption
 
             if (File.Exists(path))
             {
-                StreamReader SyncStateReader = new StreamReader(path);
-                SyncState = SyncStateReader.ReadLine();
-                SyncStateReader.Close();
+                //StreamReader SyncStateReader = new StreamReader(path);
+                //SyncState = SyncStateReader.ReadLine();
+                //SyncStateReader.Close();
+
+                SyncState = File.ReadAllText(path);
             }
             return SyncState;
         }
@@ -344,9 +346,13 @@ namespace Redemption
             {
                 Directory.CreateDirectory("SyncStates/" + smtpAdresse);
             }
-            StreamWriter SyncStateWriter = new StreamWriter(path);
-            SyncStateWriter.Write(syncState);
-            SyncStateWriter.Close();
+            //StreamWriter SyncStateWriter = new StreamWriter(path);
+            //SyncStateWriter.Write(syncState);
+            //SyncStateWriter.Close();
+
+            FileInfo file = new FileInfo(path);
+            file.Directory.Create(); // If the directory already exists, this method does nothing.
+            File.WriteAllText(file.FullName, syncState);
         }
 
         public static void writeLog(string logText)

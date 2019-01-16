@@ -7,6 +7,7 @@ using System.IO;
 using Microsoft.Exchange.WebServices.Data;
 using System.Configuration;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace Redemption
 {
@@ -17,6 +18,9 @@ namespace Redemption
             Config config = ReadConfig();
 
             ExchangeSync.writeLog("##################################################################");
+
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
 
             foreach (var m in config.mailboxes)
             {
@@ -32,6 +36,9 @@ namespace Redemption
                     ExchangeSync.writeLog("Matching List created: " + m.smtpAdresse + " - " + m.folder);
                 }
             }
+
+            stopWatch.Stop();
+            ExchangeSync.writeLog("Complete Sync - Time: " + stopWatch.Elapsed);
         }
 
         public static ExchangeService ExchangeConnect(string username, string password, string domain, string smtpAdresse, string exUri)
@@ -91,7 +98,7 @@ namespace Redemption
 
             }
             else
-                throw new FileNotFoundException();
+                throw new FileNotFoundException("Config not found");
 
             return config;
         }

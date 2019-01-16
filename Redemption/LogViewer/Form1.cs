@@ -59,50 +59,6 @@ namespace LogViewer
 
         private void openLog ()
         {
-            string line;
-
-            // Read the file and display it line by line.  
-            //try
-            //{
-            //    StreamReader file = new StreamReader(path);
-
-            //    while ((line = file.ReadLine()) != null)
-            //    {
-            //        var date = line.Substring(0, 19);
-            //        var text = line.Substring(22);
-            //        ListViewItem lvi;
-
-            //        switch (text)
-            //        {
-            //            case var someVal when new Regex(@"^[#]+$").IsMatch(someVal):
-            //                lvi = new ListViewItem(new string[] { date, "" });
-            //                lvi.BackColor = Color.Blue;
-            //                lvi.ForeColor = Color.White;
-            //                break;
-            //            case var someVal when new Regex(@"SyncRun (Start|End)").IsMatch(someVal):
-            //                lvi = new ListViewItem(new string[] { date, text });
-            //                lvi.BackColor = Color.Aquamarine;
-            //                break;
-            //            case var someVal when new Regex(@"ERROR:").IsMatch(someVal):
-            //                lvi = new ListViewItem(new string[] { date, text });
-            //                lvi.BackColor = Color.Red;
-            //                break;
-            //            default:
-            //                lvi = new ListViewItem(new string[] { date, text });
-            //                break;
-            //        }
-
-            //        lst_logView.Items.Add(lvi);
-            //        lst_logView.Items[lst_logView.Items.Count - 1].EnsureVisible();
-            //    }
-
-            //    file.Close();
-            //}
-            //catch (Exception ex)
-            //{
-            //    lbl_openTime.Text = ex.Message;
-            //}
-
             var Lines = ReadLines(path);
 
             foreach (var l in Lines)
@@ -114,7 +70,12 @@ namespace LogViewer
                 switch (text)
                 {
                     case var someVal when new Regex(@"^[#]+$").IsMatch(someVal):
-                        lvi = new ListViewItem(new string[] { date, "" });
+                        lvi = new ListViewItem(new string[] { date, "START COMPLETE RUN" });
+                        lvi.BackColor = Color.Blue;
+                        lvi.ForeColor = Color.White;
+                        break;
+                    case var someVal when new Regex(@"Complete Sync - Time:").IsMatch(someVal):
+                        lvi = new ListViewItem(new string[] { date, "FINISH COMPLETE RUN - " + text });
                         lvi.BackColor = Color.Blue;
                         lvi.ForeColor = Color.White;
                         break;
