@@ -56,7 +56,8 @@ namespace Redemption
         static Config ReadConfig()
         {
             Config config = new Config();
-            var file = "config.cfg";
+            string file = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName) + @"\config.cfg";
+            //var file = "config.cfg";
 
             int index = 0;
 

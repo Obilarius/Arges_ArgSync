@@ -18,6 +18,8 @@ namespace Redemption
         String SMTPAdresse;
         String ContactFolderName;
 
+        public static String binaryPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName); // + @"\config.cfg";
+
 
         public ExchangeSync(ExchangeService _service, string _SMTPAdresse, string _ContactFolderName)
         {
@@ -38,16 +40,13 @@ namespace Redemption
                 Stopwatch stopWatch = new Stopwatch();
                 stopWatch.Start();
 
-                
-
-
                 #region LOCAL SYNC
                 bool isEndOfChanges = false;
                 var localSyncState = getSyncState(false, SMTPAdresse); // Ist null falls Initialer SyncRun
 
                 var MailboxContactFolder = getMailboxFolder(localSyncState == null);
 
-                makeChangeKey(SMTPAdresse, MailboxContactFolder.Id, "Anfang"); // DEBUG
+                //makeChangeKey(SMTPAdresse, MailboxContactFolder.Id, "Anfang"); // DEBUG
 
                 do
                 {
@@ -269,7 +268,7 @@ namespace Redemption
                 #endregion
 
 
-                makeChangeKey(SMTPAdresse, MailboxContactFolder.Id, "Ende"); // DEBUG
+                //makeChangeKey(SMTPAdresse, MailboxContactFolder.Id, "Ende"); // DEBUG
                 
                 stopWatch.Stop();
                 writeLog("---------- SyncRun End - "+ stopWatch.Elapsed +" ----------");
@@ -347,7 +346,7 @@ namespace Redemption
         public string getSyncState(bool isPublic, string smtpAdresse)
         {
             String SyncState = null;
-            String path = "SyncStates/" + smtpAdresse + "/" + ContactFolderName;
+            String path = binaryPath + @"\SyncStates\" + smtpAdresse + @"\" + ContactFolderName;
             if (isPublic)
             {
                 path += "_public";
@@ -367,20 +366,20 @@ namespace Redemption
 
         public void writeSyncState(string syncState, bool isPublic, string smtpAdresse)
         {
-            String path = "SyncStates/" + smtpAdresse + "/" + ContactFolderName;
+            String path = binaryPath + @"\SyncStates\" + smtpAdresse + @"\" + ContactFolderName;
             if (isPublic)
             {
                 path += "_public";
             }
             path += ".dat";
 
-            if (!Directory.Exists("SyncStates"))
+            if (!Directory.Exists(binaryPath + @"\SyncStates"))
             {
-                Directory.CreateDirectory("SyncStates");
+                Directory.CreateDirectory(binaryPath + @"\SyncStates");
             }
-            if (!Directory.Exists("SyncStates/" + smtpAdresse))
+            if (!Directory.Exists(binaryPath + @"\SyncStates\" + smtpAdresse))
             {
-                Directory.CreateDirectory("SyncStates/" + smtpAdresse);
+                Directory.CreateDirectory(binaryPath + @"\SyncStates\" + smtpAdresse);
             }
             //StreamWriter SyncStateWriter = new StreamWriter(path);
             //SyncStateWriter.Write(syncState);
@@ -393,12 +392,13 @@ namespace Redemption
 
         public static void writeLog(string logText)
         {
-            if (!Directory.Exists("log"))
+            var path = binaryPath + @"\log";
+            if (!Directory.Exists(path))
             {
-                Directory.CreateDirectory("log");
+                Directory.CreateDirectory(path);
             }
             var log = DateTime.Now.ToShortDateString() + "-" + DateTime.Now.ToLongTimeString() + " - " + logText;
-            var filename = "log/" + DateTime.Now.ToString("yyyy-MM") + "_Log.txt";
+            var filename = path + @"\" + DateTime.Now.ToString("yyyy-MM") + "_Log.txt";
             StreamWriter SyncStateWriter = new StreamWriter(filename, true);
             SyncStateWriter.WriteLine(log);
             SyncStateWriter.Close();

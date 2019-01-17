@@ -15,7 +15,7 @@ namespace Redemption
             if (service != null)
             {
 
-                var path = "MatchingList/" + SMTPAdresse + "_" + ContactFolderName + "_matchingList.xml";
+                var path = ExchangeSync.binaryPath + @"\MatchingList\" + SMTPAdresse + "_" + ContactFolderName + "_matchingList.xml";
 
                 var PublicRoot = Folder.Bind(service, WellKnownFolderName.Contacts);
                 SearchFilter.IsEqualTo filter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, ContactFolderName);
@@ -54,9 +54,9 @@ namespace Redemption
 
 
 
-                if (!Directory.Exists("MatchingList"))
+                if (!Directory.Exists(ExchangeSync.binaryPath + @"\MatchingList"))
                 {
-                    Directory.CreateDirectory("MatchingList");
+                    Directory.CreateDirectory(ExchangeSync.binaryPath + @"\MatchingList");
                 }
 
                 XMLReader.saveToXml(path, matchingList);
@@ -65,7 +65,7 @@ namespace Redemption
 
         public static List<Matching> GetList (string SMTPAdresse, string ContactFolderName)
         {
-            var path = "MatchingList/" + SMTPAdresse + "_" + ContactFolderName + "_matchingList.xml";
+            var path = ExchangeSync.binaryPath + @"\MatchingList\" + SMTPAdresse + "_" + ContactFolderName + "_matchingList.xml";
 
             List<Matching> _list = null;
             _list = XMLReader.readFromXml(path);
