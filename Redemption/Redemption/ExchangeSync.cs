@@ -56,6 +56,8 @@ namespace Redemption
 
                         foreach (ItemChange ic_mailbox in icc_mailbox)
                         {
+                            Console.WriteLine(ic_mailbox.ChangeType);
+
                             if (ic_mailbox.ChangeType == ChangeType.Create)
                             {
                                 try
@@ -76,15 +78,14 @@ namespace Redemption
                                 try
                                 {
                                     Contact contacts = Contact.Bind(service, ic_mailbox.ItemId);
-
-                                    SearchFilter.IsEqualTo filter2 = new SearchFilter.IsEqualTo(ItemSchema.Subject, contacts.Subject);
-
-                                    FindItemsResults<Item> findResults = service.FindItems(PublicContactFolder.Id, filter2, new ItemView(1));
                                     contacts.Delete(DeleteMode.HardDelete);
-                                    foreach (Contact item in findResults.Items)
-                                    {
-                                        item.Copy(MailboxContactFolder.Id);
-                                    }
+
+                                    var MailboxId = ic_mailbox.ItemId.UniqueId;
+                                    List<Matching> matchingList = MatchingList.GetList(SMTPAdresse, ContactFolderName);
+                                    Matching result = matchingList.Find(x => x.MailboxId == MailboxId);
+
+                                    Contact PublicContacts = Contact.Bind(service, result.PublicId);
+                                    PublicContacts.Copy(MailboxContactFolder.Id);
 
                                     //Console.WriteLine(SMTPAdresse + " - LocalChange " + contacts.Subject + " was updated locally and removed automatically");
                                 }
@@ -132,7 +133,6 @@ namespace Redemption
                 var sSyncState = getSyncState(true, SMTPAdresse);
                 var index = 0;
 
-
                 do
                 {
                     ChangeCollection<ItemChange> icc = service.SyncFolderItems(PublicContactFolder.Id, PropertySet.FirstClassProperties, null, 512, SyncFolderItemsScope.NormalItems, sSyncState);
@@ -163,14 +163,20 @@ namespace Redemption
                             }
                             else if (ic.ChangeType == ChangeType.Update)
                             {
-                                Contact contacts = Contact.Bind(service, ic.ItemId);
-
-                                SearchFilter.IsEqualTo filter2 = new SearchFilter.IsEqualTo(ItemSchema.Subject, contacts.Subject);
-                                FindItemsResults<Item> findResults = service.FindItems(MailboxContactFolder.Id, filter2, new ItemView(1));
-                                foreach (Contact item in findResults.Items)
+                                try
                                 {
-                                    item.Delete(DeleteMode.HardDelete);
-                                    contacts.Copy(MailboxContactFolder.Id);
+                                    List<Matching> matchingList = MatchingList.GetList(SMTPAdresse, ContactFolderName);
+                                    Matching result = matchingList.Find(x => x.PublicId == ic.ItemId.UniqueId);
+
+                                    Contact LocalContact = Contact.Bind(service, result.MailboxId);
+                                    LocalContact.Delete(DeleteMode.HardDelete);
+
+                                    Contact PublicContact = Contact.Bind(service, ic.ItemId);
+                                    PublicContact.Copy(MailboxContactFolder.Id);
+                                }
+                                catch (Exception ex)
+                                {
+                                    writeLog("ERROR: ExchangeSync.cs - 179: " + ex.Message);
                                 }
 
                                 //Console.WriteLine(SMTPAdresse + " - " + index + " - PublicChange " + contacts.Subject + " was updated in public and updated in the mailbox");
@@ -223,7 +229,6 @@ namespace Redemption
                             index++;
                         }
                     }
-
                     
                     sSyncState = icc.SyncState;
 
@@ -318,6 +323,8 @@ namespace Redemption
             }
             path += ".dat";
 
+            writeLog("READ SYNCSTATE: " + path);
+
             if (File.Exists(path))
             {
                 //StreamReader SyncStateReader = new StreamReader(path);
@@ -337,6 +344,8 @@ namespace Redemption
                 path += "_public";
             }
             path += ".dat";
+
+            writeLog("WRITE SYNCSTATE: " + path);
 
             if (!Directory.Exists("SyncStates"))
             {

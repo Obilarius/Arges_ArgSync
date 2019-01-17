@@ -34,6 +34,7 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lbl_openTime = new System.Windows.Forms.Label();
+            this.lbl_lines = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btn_openFileDialog
@@ -81,11 +82,20 @@
             this.lbl_openTime.Text = "No Log Opened";
             this.lbl_openTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // lbl_lines
+            // 
+            this.lbl_lines.AutoSize = true;
+            this.lbl_lines.Location = new System.Drawing.Point(94, 18);
+            this.lbl_lines.Name = "lbl_lines";
+            this.lbl_lines.Size = new System.Drawing.Size(0, 13);
+            this.lbl_lines.TabIndex = 3;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.lbl_lines);
             this.Controls.Add(this.lbl_openTime);
             this.Controls.Add(this.btn_openFileDialog);
             this.Controls.Add(this.lst_logView);
@@ -95,6 +105,7 @@
             this.Text = "LogViewer";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -104,6 +115,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.Label lbl_openTime;
+        private System.Windows.Forms.Label lbl_lines;
     }
 }
 

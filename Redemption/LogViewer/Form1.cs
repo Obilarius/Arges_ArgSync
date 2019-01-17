@@ -60,6 +60,13 @@ namespace LogViewer
         private void openLog ()
         {
             var Lines = ReadLines(path);
+            var lineCount = 0;
+
+            foreach (var l in Lines)
+            {
+                lineCount++;
+            }
+            lbl_lines.Text = lineCount.ToString() + " Zeilen";
 
             foreach (var l in Lines)
             {
@@ -94,6 +101,7 @@ namespace LogViewer
 
                 lst_logView.Items.Add(lvi);
                 lst_logView.Items[lst_logView.Items.Count - 1].EnsureVisible();
+                lst_logView.Refresh();
             }
         }
 
