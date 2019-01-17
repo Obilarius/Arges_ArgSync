@@ -38,12 +38,16 @@ namespace Redemption
                 Stopwatch stopWatch = new Stopwatch();
                 stopWatch.Start();
 
+                
+
 
                 #region LOCAL SYNC
                 bool isEndOfChanges = false;
                 var localSyncState = getSyncState(false, SMTPAdresse); // Ist null falls Initialer SyncRun
 
                 var MailboxContactFolder = getMailboxFolder(localSyncState == null);
+
+                makeChangeKey(SMTPAdresse, MailboxContactFolder.Id, "Anfang"); // DEBUG
 
                 do
                 {
@@ -113,6 +117,7 @@ namespace Redemption
                                 }
                             }
                         }
+
                         //Console.WriteLine(icc_mailbox.Count + " changes in own mailbox folder");
                     }
 
@@ -256,11 +261,16 @@ namespace Redemption
                     }
                 } while (!isEndOfChangesLocal);
 
+                
+
                 writeSyncState(sSyncStateLocal, false, SMTPAdresse);
 
                 //writeSyncState(localSyncState, false, SMTPAdresse);
                 #endregion
 
+
+                makeChangeKey(SMTPAdresse, MailboxContactFolder.Id, "Ende"); // DEBUG
+                
                 stopWatch.Stop();
                 writeLog("---------- SyncRun End - "+ stopWatch.Elapsed +" ----------");
 
@@ -268,6 +278,27 @@ namespace Redemption
                 
             }
             return changeValue;
+        }
+
+        public void makeChangeKey(string SMTPAdresse, FolderId Id, string fileName = "")
+        {
+            ItemView itemView = new ItemView(int.MaxValue);
+            FindItemsResults<Item> searchResults = service.FindItems(Id, itemView);
+
+            var changeKeys = "<?xml version=\"1.0\" encoding=\"utf-8\"?><changeKeysList>";
+
+            foreach (Item item in searchResults)
+            {
+                changeKeys += "<ChangeKeyEntry>";
+                changeKeys += "<Subject>" + item.Subject + "</Subject>";
+                changeKeys += "<UniqueId>" + item.Id.UniqueId + "</UniqueId>";
+                changeKeys += "<ChangeKey>" + item.Id.ChangeKey + "</ChangeKey>";
+                changeKeys += "</ChangeKeyEntry>";
+            }
+
+            changeKeys += "</changeKeysList>";
+            var time = System.DateTime.Now.Hour + "-" + DateTime.Now.Minute + "-" + DateTime.Now.Second;
+            File.WriteAllText("ChangeKeys/" + SMTPAdresse + "-" + time +"-"+ fileName + ".xml", changeKeys);
         }
 
         public Folder getPublicFolder()
@@ -323,8 +354,6 @@ namespace Redemption
             }
             path += ".dat";
 
-            writeLog("READ SYNCSTATE: " + path);
-
             if (File.Exists(path))
             {
                 //StreamReader SyncStateReader = new StreamReader(path);
@@ -344,8 +373,6 @@ namespace Redemption
                 path += "_public";
             }
             path += ".dat";
-
-            writeLog("WRITE SYNCSTATE: " + path);
 
             if (!Directory.Exists("SyncStates"))
             {
