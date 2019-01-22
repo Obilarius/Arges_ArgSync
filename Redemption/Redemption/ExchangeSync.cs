@@ -47,7 +47,7 @@ namespace Redemption
                 var MailboxContactFolder = getMailboxFolder(localSyncState == null);
 
                 //makeChangeKey(SMTPAdresse, MailboxContactFolder.Id, "Anfang"); // DEBUG
-
+                var changeKeys = "";
                 do
                 {
                     ChangeCollection<ItemChange> icc_mailbox = service.SyncFolderItems(MailboxContactFolder.Id, PropertySet.FirstClassProperties, null, 512, SyncFolderItemsScope.NormalItems, localSyncState);
@@ -66,6 +66,7 @@ namespace Redemption
                                 try
                                 {
                                     Contact contacts = Contact.Bind(service, ic_mailbox.ItemId);
+                                    //writeLog(contacts.Subject + " - Create");
                                     contacts.Delete(DeleteMode.HardDelete);
                                 }
                                 catch (Exception ex)
@@ -78,9 +79,16 @@ namespace Redemption
                             }
                             else if (ic_mailbox.ChangeType == ChangeType.Update)
                             {
+                                // Wird nicht benutzt da der ChacheModus von Outlook die ChangeKeys ändert und damit ca alle 30min ein InitialerSync stattfindet
+                                // Evtl eigenen Hash über Felder sobalt die Kontakte aus SAP kommen alternativ anderes Feld mit dem letzten Änderungsdatum.
+                                // Lokale Änderungen würden sowieso nicht zurück in den Öffentlichen Ordner geschrieben, sondern nur mit den Daten von dort ersetzt werden.
+                                // Damit werden lokale Änderungen (z.B Name, Tel ... ) vom Benutzer nicht mehr berücksichtigt, sondern nur noch Create und Delete. 
                                 try
                                 {
                                     Contact contacts = Contact.Bind(service, ic_mailbox.ItemId);
+                                    //writeLog(contacts.Subject + " - Update");
+                                    changeKeys += contacts.Subject + " -- " + contacts.Id.ChangeKey + System.Environment.NewLine;
+
                                     contacts.Delete(DeleteMode.HardDelete);
 
                                     var MailboxId = ic_mailbox.ItemId.UniqueId;
@@ -89,14 +97,12 @@ namespace Redemption
 
                                     Contact PublicContacts = Contact.Bind(service, result.PublicId);
                                     PublicContacts.Copy(MailboxContactFolder.Id);
-
-                                    //Console.WriteLine(SMTPAdresse + " - LocalChange " + contacts.Subject + " was updated locally and removed automatically");
                                 }
                                 catch (Exception ex)
                                 {
                                     writeLog("ERROR: LocalSync Update: " + ex.Message);
                                 }
-                                
+
                             }
                             else if (ic_mailbox.ChangeType == ChangeType.Delete)
                             {
@@ -108,6 +114,7 @@ namespace Redemption
                                     Matching result = matchingList.Find(x => x.MailboxId == MailboxId);
 
                                     Contact contacts = Contact.Bind(service, result.PublicId);
+                                    //writeLog(contacts.Subject + " - Delete");
                                     contacts.Copy(MailboxContactFolder.Id);
                                 }
                                 catch (Exception ex)
@@ -128,6 +135,9 @@ namespace Redemption
                     }
 
                 } while (!isEndOfChanges);
+
+                Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+                File.WriteAllText(binaryPath + @"\changeKeys\ChangeKeys_" + SMTPAdresse + "_" + unixTimestamp, changeKeys);
 
                 writeSyncState(localSyncState, false, SMTPAdresse);
                 #endregion
@@ -320,7 +330,15 @@ namespace Redemption
                 //löscht den Kontakt Ordner falls er beim Initialen SyncRun vorhanden ist
                 if (init)
                 {
-                    FindMailboxContactFolder.Folders[0].Delete(DeleteMode.HardDelete);
+                    try
+                    {
+                        FindMailboxContactFolder.Folders[0].Delete(DeleteMode.HardDelete);
+                    }
+                    catch (Exception)
+                    {
+                        throw new Exception(ContactFolderName + " wurde nicht gelöscht");
+                    }
+                    
 
                     ContactsFolder folder = new ContactsFolder(service);
                     folder.DisplayName = ContactFolderName;
