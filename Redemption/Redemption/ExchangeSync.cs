@@ -113,9 +113,16 @@ namespace Redemption
                                     List<Matching> matchingList = MatchingList.GetList(SMTPAdresse, ContactFolderName);
                                     Matching result = matchingList.Find(x => x.MailboxId == MailboxId);
 
-                                    Contact contacts = Contact.Bind(service, result.PublicId);
-                                    //writeLog(contacts.Subject + " - Delete");
-                                    contacts.Copy(MailboxContactFolder.Id);
+                                    if (result == null)
+                                    {
+                                        writeLog("ERROR: No match in MatchingList for: " + MailboxId);
+                                    }
+                                    else
+                                    {
+                                        Contact contacts = Contact.Bind(service, result.PublicId);
+                                        //writeLog(contacts.Subject + " - Delete");
+                                        contacts.Copy(MailboxContactFolder.Id);
+                                    }
                                 }
                                 catch (Exception ex)
                                 {
@@ -137,7 +144,7 @@ namespace Redemption
                 } while (!isEndOfChanges);
 
                 Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-                File.WriteAllText(binaryPath + @"\changeKeys\ChangeKeys_" + SMTPAdresse + "_" + unixTimestamp, changeKeys);
+                File.WriteAllText(binaryPath + @"\changeKeys\ChangeKeys_" + ContactFolderName + SMTPAdresse + "_" + unixTimestamp, changeKeys);
 
                 writeSyncState(localSyncState, false, SMTPAdresse);
                 #endregion

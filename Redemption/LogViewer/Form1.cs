@@ -63,7 +63,7 @@ namespace LogViewer
             TimeSpan ts = lastOpenLog - DateTime.Now;
             if (ts.Milliseconds < 500)
             {
-                return;
+                //return;
             }
 
             int currentIndex = 0;
@@ -99,6 +99,10 @@ namespace LogViewer
                         case var someVal when new Regex(@"ERROR:").IsMatch(someVal):
                             lvi = new ListViewItem(new string[] { date, text });
                             lvi.BackColor = Color.Red;
+                            break;
+                        case var someVal when new Regex(@" - \d* changes ").IsMatch(someVal):
+                            lvi = new ListViewItem(new string[] { date, text });
+                            lvi.ForeColor = Color.SaddleBrown;
                             break;
                         default:
                             lvi = new ListViewItem(new string[] { date, text });
