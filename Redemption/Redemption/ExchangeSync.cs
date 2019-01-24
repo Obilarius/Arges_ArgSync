@@ -55,14 +55,24 @@ namespace Redemption
                     if (icc_mailbox.Count != 0)
                     {
                         changeValue = true;
+                        var c = 0;
+                        var u = 0;
+                        var d = 0;
                         writeLog(SMTPAdresse + " - " + icc_mailbox.Count + " changes in own mailbox folder");
 
                         foreach (ItemChange ic_mailbox in icc_mailbox)
                         {
                             Console.WriteLine(ic_mailbox.ChangeType);
+                            try
+                            {
+                                //changeKeys += ic_mailbox.ChangeType + "_" + ic_mailbox.Item.Subject + "_" + ic_mailbox.ItemId.ChangeKey + System.Environment.NewLine; //DEBUG
+                            }
+                            catch (Exception) {}
+                            
 
                             if (ic_mailbox.ChangeType == ChangeType.Create)
                             {
+                                c++;
                                 try
                                 {
                                     Contact contacts = Contact.Bind(service, ic_mailbox.ItemId);
@@ -79,33 +89,35 @@ namespace Redemption
                             }
                             else if (ic_mailbox.ChangeType == ChangeType.Update)
                             {
+                                u++;
                                 // Wird nicht benutzt da der ChacheModus von Outlook die ChangeKeys ändert und damit ca alle 30min ein InitialerSync stattfindet
                                 // Evtl eigenen Hash über Felder sobalt die Kontakte aus SAP kommen alternativ anderes Feld mit dem letzten Änderungsdatum.
                                 // Lokale Änderungen würden sowieso nicht zurück in den Öffentlichen Ordner geschrieben, sondern nur mit den Daten von dort ersetzt werden.
                                 // Damit werden lokale Änderungen (z.B Name, Tel ... ) vom Benutzer nicht mehr berücksichtigt, sondern nur noch Create und Delete. 
-                                try
-                                {
-                                    Contact contacts = Contact.Bind(service, ic_mailbox.ItemId);
-                                    //writeLog(contacts.Subject + " - Update");
-                                    changeKeys += contacts.Subject + " -- " + contacts.Id.ChangeKey + System.Environment.NewLine;
 
-                                    contacts.Delete(DeleteMode.HardDelete);
+                                //try
+                                //{
+                                //    Contact contacts = Contact.Bind(service, ic_mailbox.ItemId);
+                                //    //writeLog(contacts.Subject + " - Update");
 
-                                    var MailboxId = ic_mailbox.ItemId.UniqueId;
-                                    List<Matching> matchingList = MatchingList.GetList(SMTPAdresse, ContactFolderName);
-                                    Matching result = matchingList.Find(x => x.MailboxId == MailboxId);
+                                //    contacts.Delete(DeleteMode.HardDelete);
 
-                                    Contact PublicContacts = Contact.Bind(service, result.PublicId);
-                                    PublicContacts.Copy(MailboxContactFolder.Id);
-                                }
-                                catch (Exception ex)
-                                {
-                                    writeLog("ERROR: LocalSync Update: " + ex.Message);
-                                }
+                                //    var MailboxId = ic_mailbox.ItemId.UniqueId;
+                                //    List<Matching> matchingList = MatchingList.GetList(SMTPAdresse, ContactFolderName);
+                                //    Matching result = matchingList.Find(x => x.MailboxId == MailboxId);
+
+                                //    Contact PublicContacts = Contact.Bind(service, result.PublicId);
+                                //    PublicContacts.Copy(MailboxContactFolder.Id);
+                                //}
+                                //catch (Exception ex)
+                                //{
+                                //    writeLog("ERROR: LocalSync Update: " + ex.Message);
+                                //}
 
                             }
                             else if (ic_mailbox.ChangeType == ChangeType.Delete)
                             {
+                                d++;
                                 var MailboxId = ic_mailbox.ItemId.UniqueId;
 
                                 try
@@ -131,7 +143,8 @@ namespace Redemption
                             }
                         }
 
-                        //Console.WriteLine(icc_mailbox.Count + " changes in own mailbox folder");
+                        writeLog(SMTPAdresse + " - " + icc_mailbox.Count + " changes ("+c+" created, "+u+" updated, "+d+" deleted) in own mailbox folder");
+                        writeLog("LOCAL UPDATES ARE IGNORED!");
                     }
 
                     localSyncState = icc_mailbox.SyncState;
@@ -143,8 +156,9 @@ namespace Redemption
 
                 } while (!isEndOfChanges);
 
-                Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-                File.WriteAllText(binaryPath + @"\changeKeys\ChangeKeys_" + ContactFolderName + SMTPAdresse + "_" + unixTimestamp, changeKeys);
+                // DEBUG
+                //Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+                //File.WriteAllText(binaryPath + @"\changeKeys\ChangeKeys_" + ContactFolderName + SMTPAdresse + "_" + unixTimestamp, changeKeys);
 
                 writeSyncState(localSyncState, false, SMTPAdresse);
                 #endregion
@@ -164,6 +178,9 @@ namespace Redemption
                     }
                     else
                     {
+                        var c = 0;
+                        var u = 0;
+                        var d = 0;
                         changeValue = true;
                         writeLog(SMTPAdresse + " - " + icc.Count + " changes in public folder");
 
@@ -171,6 +188,7 @@ namespace Redemption
                         {
                             if (ic.ChangeType == ChangeType.Create)
                             {
+                                c++;
                                 try
                                 {
                                     Contact contacts = Contact.Bind(service, ic.ItemId);
@@ -184,6 +202,7 @@ namespace Redemption
                             }
                             else if (ic.ChangeType == ChangeType.Update)
                             {
+                                u++;
                                 try
                                 {
                                     List<Matching> matchingList = MatchingList.GetList(SMTPAdresse, ContactFolderName);
@@ -204,6 +223,7 @@ namespace Redemption
                             }
                             else if (ic.ChangeType == ChangeType.Delete)
                             {
+                                d++;
                                 var PublicId = ic.ItemId.UniqueId;
 
                                 List<Matching> matchingList = MatchingList.GetList(SMTPAdresse, ContactFolderName);
@@ -249,6 +269,8 @@ namespace Redemption
 
                             index++;
                         }
+
+                        writeLog(SMTPAdresse + " - " + icc.Count + " changes (" + c + " created, " + u + " updated, " + d + " deleted) in public folder");
                     }
                     
                     sSyncState = icc.SyncState;
