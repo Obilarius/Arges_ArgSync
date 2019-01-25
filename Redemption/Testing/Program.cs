@@ -16,7 +16,6 @@ namespace Testing
         static void Main(string[] args)
         {
 
-            MatchingList list = null;
             string path = "Liste.xml";
 
             if (File.Exists(path))

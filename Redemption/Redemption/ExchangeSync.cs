@@ -47,7 +47,6 @@ namespace Redemption
                 var MailboxContactFolder = getMailboxFolder(localSyncState == null);
 
                 //makeChangeKey(SMTPAdresse, MailboxContactFolder.Id, "Anfang"); // DEBUG
-                var changeKeys = "";
                 do
                 {
                     ChangeCollection<ItemChange> icc_mailbox = service.SyncFolderItems(MailboxContactFolder.Id, PropertySet.FirstClassProperties, null, 512, SyncFolderItemsScope.NormalItems, localSyncState);
@@ -58,7 +57,7 @@ namespace Redemption
                         var c = 0;
                         var u = 0;
                         var d = 0;
-                        writeLog(SMTPAdresse + " - " + icc_mailbox.Count + " changes in own mailbox folder");
+                        //writeLog(SMTPAdresse + " - " + icc_mailbox.Count + " changes in own mailbox folder");
 
                         foreach (ItemChange ic_mailbox in icc_mailbox)
                         {
@@ -182,7 +181,7 @@ namespace Redemption
                         var u = 0;
                         var d = 0;
                         changeValue = true;
-                        writeLog(SMTPAdresse + " - " + icc.Count + " changes in public folder");
+                        //writeLog(SMTPAdresse + " - " + icc.Count + " changes in public folder");
 
                         foreach (ItemChange ic in icc)
                         {
@@ -226,6 +225,8 @@ namespace Redemption
                                 d++;
                                 var PublicId = ic.ItemId.UniqueId;
 
+                                
+
                                 List<Matching> matchingList = MatchingList.GetList(SMTPAdresse, ContactFolderName);
 
                                 if (matchingList != null)
@@ -233,6 +234,9 @@ namespace Redemption
                                     try
                                     {
                                         Matching result = matchingList.Find(x => x.PublicId == PublicId);
+
+                                        var BASync = new AppointmentSync(service, SMTPAdresse);
+                                        BASync.deleteName(result.Subject);
 
                                         Contact contacts = Contact.Bind(service, result.MailboxId);
                                         contacts.Delete(DeleteMode.HardDelete);
