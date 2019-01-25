@@ -35,6 +35,9 @@ namespace Redemption
 
                     var BASync = new AppointmentSync(service, m.smtpAdresse);
 
+                    //BASync.runDelete();
+                    //BASync.deleteWithCategorie("automatically added from PF");
+
                     if (m.birthday)
                     {
                         BASync.runBirthdaySync();
@@ -47,7 +50,7 @@ namespace Redemption
                     sWatch.Stop();
                     ExchangeSync.writeLog("---------- SyncRun End - " + stopWatch.Elapsed + " ----------");
                 }
-                
+
 
                 foreach (var f in m.folder)
                 {
