@@ -7,27 +7,33 @@ using System.Threading.Tasks;
 
 namespace Redemption
 {
-    class BirthdaySync
+    class AppointmentSync
     {
         ExchangeService service = null;
 
         String SMTPAdresse;
         String ContactFolderName;
 
-        public BirthdaySync(ExchangeService _service, string _SMTPAdresse, string _ContactFolderName = "Arges Intern")
+        public AppointmentSync(ExchangeService _service, string _SMTPAdresse, string _ContactFolderName = "Arges Intern")
         {
             SMTPAdresse = _SMTPAdresse;
             ContactFolderName = _ContactFolderName;
             service = _service;
+        }
 
+        public void runBirthdaySync ()
+        {
             var mailboxBirthdays = getMailboxAppointments(0);
-            var mailboxAnniversary = getMailboxAppointments(1);
             addAppointment(mailboxBirthdays, 0);
+        }
+
+        public void runAnniversarySync()
+        {
+            var mailboxAnniversary = getMailboxAppointments(1);
             addAppointment(mailboxAnniversary, 1);
         }
 
-
-        public List<string> getMailboxAppointments(int BirthdayOrAnniversary, bool delete = false) // 0 => Geburtstag  1 => Jahrestag
+        List<string> getMailboxAppointments(int BirthdayOrAnniversary, bool delete = false) // 0 => Geburtstag  1 => Jahrestag
         {
             // Initialize values for the start and end times, and the number of appointments to retrieve.
             DateTime startDate = DateTime.Now;
@@ -63,7 +69,7 @@ namespace Redemption
             return mailboxAppointments;
         }
 
-        public Folder getPublicFolder()
+        Folder getPublicFolder()
         {
             var PublicRoot = Folder.Bind(service, WellKnownFolderName.PublicFoldersRoot);
             SearchFilter.IsEqualTo filter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, ContactFolderName);
@@ -71,7 +77,7 @@ namespace Redemption
             return FindPublicContactFolder.Folders[0];
         }
 
-        public void addAppointment(List<string> mailboxList, int BirthdayOrAnniversary) // 0 => Geburtstag  1 => Jahrestag
+        void addAppointment(List<string> mailboxList, int BirthdayOrAnniversary) // 0 => Geburtstag  1 => Jahrestag
         {
             var PublicRoot = Folder.Bind(service, WellKnownFolderName.PublicFoldersRoot);
             SearchFilter.IsEqualTo filter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, ContactFolderName);
@@ -81,6 +87,7 @@ namespace Redemption
             ItemView view = new ItemView(int.MaxValue);
             FindItemsResults<Item> findResults;
 
+            var count = 0;
             do
             {
                 findResults = service.FindItems(ContactFolder.Id, view);
@@ -116,8 +123,9 @@ namespace Redemption
 
                         // Prüft ob Appointment schon vorhanden ist
                         var match = mailboxList.FirstOrDefault(stringToCheck => stringToCheck.Contains(appo.Subject));
-                        if (match == null)
+                        if (match == null && appo.Start >= DateTime.Now)
                         {
+                            count++;
                             appo.Save();
                         }
                     }
@@ -125,6 +133,17 @@ namespace Redemption
 
                 view.Offset += findResults.Items.Count;
             } while (findResults.MoreAvailable == true);
+
+            var e = BirthdayOrAnniversary == 0 ? " Geburtstage" : " Jahrestag";
+            if (count > 0)
+            {
+                ExchangeSync.writeLog(SMTPAdresse + " - " + count + e + " hinzugefügt");
+            }
+            else
+            {
+                ExchangeSync.writeLog(SMTPAdresse + " - Keine" + e + " hinzugefügt");
+            }
+            
         }
     }
 }

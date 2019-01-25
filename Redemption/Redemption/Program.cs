@@ -24,27 +24,42 @@ namespace Redemption
 
             foreach (var m in config.mailboxes)
             {
+                ExchangeSync.writeLog("----------" + m.smtpAdresse.ToUpper() + "----------");
                 ExchangeService service = ExchangeConnect(config.username, config.password, config.domain, m.smtpAdresse, config.exUri);
 
-                if (m.birthday)
+                if (m.birthday || m.anniversary)
                 {
-                    var BSync = new BirthdaySync(service, m.smtpAdresse);
+                    ExchangeSync.writeLog("---------- SyncRun Start - Appointment ----------");
+                    Stopwatch sWatch = new Stopwatch();
+                    sWatch.Start();
+
+                    var BASync = new AppointmentSync(service, m.smtpAdresse);
+
+                    if (m.birthday)
+                    {
+                        BASync.runBirthdaySync();
+                    }
+                    if (m.anniversary)
+                    {
+                        BASync.runAnniversarySync();
+                    }
+
+                    sWatch.Stop();
+                    ExchangeSync.writeLog("---------- SyncRun End - " + stopWatch.Elapsed + " ----------");
                 }
-                if (m.anniversary)
-                {
-                }
+                
 
                 foreach (var f in m.folder)
                 {
-                    //var SyncRun = new ExchangeSync(service, m.smtpAdresse, f);
-                    //SyncRun.writePublicIdInExProp();
-                    //bool changes = SyncRun.Sync();
+                    var SyncRun = new ExchangeSync(service, m.smtpAdresse, f);
+                    SyncRun.writePublicIdInExProp();
+                    bool changes = SyncRun.Sync();
 
-                    //if (changes)
-                    //{
-                    //    MatchingList.Create(service, m.smtpAdresse, f);
-                    //    ExchangeSync.writeLog("Matching List created: " + m.smtpAdresse + " - " + f);
-                    //}
+                    if (changes)
+                    {
+                        MatchingList.Create(service, m.smtpAdresse, f);
+                        ExchangeSync.writeLog("Matching List created: " + m.smtpAdresse + " - " + f);
+                    }
                 }
             }
 
