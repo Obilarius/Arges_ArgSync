@@ -24,7 +24,7 @@ namespace Redemption
 
             foreach (var m in config.mailboxes)
             {
-                ExchangeSync.writeLog("----------" + m.smtpAdresse.ToUpper() + "----------");
+                ExchangeSync.writeLog("---------- " + m.smtpAdresse.ToUpper() + " ----------");
                 ExchangeService service = ExchangeConnect(config.username, config.password, config.domain, m.smtpAdresse, config.exUri);
 
                 if (m.birthday || m.anniversary)
