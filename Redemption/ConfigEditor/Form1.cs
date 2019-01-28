@@ -16,6 +16,7 @@ namespace ConfigEditor
     {
         Config config = null;
         int selectedMailbox = -1;
+        bool selectedIndexChange = false;
         string[] FolderArray = new string[] { "Arges Intern", "Arges Kontakte" };
 
         public ConfigEditor()
@@ -149,13 +150,14 @@ namespace ConfigEditor
 
         private void lst_syncMailboxes_SelectedIndexChanged(object sender, EventArgs e)
         {
+            selectedIndexChange = true;
             try
             {
-                txt_smtp.Text = "";
-                check_anniversaries.Checked = false;
-                check_birthdays.Checked = false;
-                check_ArgesIntern.Checked = false;
-                check_ArgesKontakte.Checked = false;
+                //txt_smtp.Text = "";
+                //check_anniversaries.Checked = false;
+                //check_birthdays.Checked = false;
+                //check_ArgesIntern.Checked = false;
+                //check_ArgesKontakte.Checked = false;
 
                 var selectedItem = lst_syncMailboxes.SelectedItems[0];
                 selectedMailbox = selectedItem.Index;
@@ -164,33 +166,12 @@ namespace ConfigEditor
 
                 txt_smtp.Text = smtp;
 
+                check_ArgesIntern.Checked = Array.IndexOf(folder, FolderArray[0]) > -1 ? true : false;
+                check_ArgesKontakte.Checked = Array.IndexOf(folder, FolderArray[1]) > -1 ? true : false;
+                check_birthdays.Checked = selectedItem.SubItems[2].Text == "True" ? true : false;
+                check_anniversaries.Checked = selectedItem.SubItems[3].Text == "True" ? true : false;
 
-                if (Array.IndexOf(folder, FolderArray[0]) > -1)
-                {
-                    check_ArgesIntern.Checked = true;
-                }
-                if (Array.IndexOf(folder, FolderArray[1]) > -1)
-                {
-                    check_ArgesKontakte.Checked = true;
-                }
-
-                if (selectedItem.SubItems[2].Text == "True")
-                {
-                    check_birthdays.Checked = true;
-                }
-                if (selectedItem.SubItems[3].Text == "True")
-                {
-                    check_anniversaries.Checked = true;
-                }
-
-                if (lst_syncMailboxes.Items[selectedMailbox].BackColor == Color.DarkGray)
-                {
-                    check_disable.Checked = true;
-                } 
-                else
-                {
-                    check_disable.Checked = false;
-                }
+                check_disable.Checked = lst_syncMailboxes.Items[selectedMailbox].BackColor == Color.DarkGray ? true : false;
                 
             }
             catch (Exception)
@@ -198,6 +179,7 @@ namespace ConfigEditor
 
                 //throw;
             }
+            selectedIndexChange = false;
         }
 
         private void btn_newSyncMailbox_Click(object sender, EventArgs e)
@@ -254,32 +236,36 @@ namespace ConfigEditor
 
         private void saveSyncMailbox_Click(object sender, EventArgs e)
         {
-            string folder = null;
-            bool AI = check_ArgesIntern.Checked;
-            bool AK = check_ArgesKontakte.Checked;
-
-            if (AI && !AK) { folder = FolderArray[0]; }
-            else if (!AI && AK) { folder = FolderArray[1]; }
-            else if (AI && AK) { folder = FolderArray[0] + ";" + FolderArray[1]; }
-            else if (!AI && !AK) { folder = ""; }
-
-            lst_syncMailboxes.Items[selectedMailbox].SubItems[0].Text = txt_smtp.Text;
-            lst_syncMailboxes.Items[selectedMailbox].SubItems[1].Text = folder;
-            lst_syncMailboxes.Items[selectedMailbox].SubItems[2].Text = check_birthdays.Checked.ToString();
-            lst_syncMailboxes.Items[selectedMailbox].SubItems[3].Text = check_anniversaries.Checked.ToString();
-
-            if (check_disable.Checked)
+            if (!selectedIndexChange)
             {
-                lst_syncMailboxes.Items[selectedMailbox].BackColor = Color.DarkGray;
-                lst_syncMailboxes.Items[selectedMailbox].ForeColor = Color.DimGray;
-            }
-            else
-            {
-                lst_syncMailboxes.Items[selectedMailbox].BackColor = SystemColors.Window;
-                lst_syncMailboxes.Items[selectedMailbox].ForeColor = SystemColors.WindowText;
+                string folder = "";
+                bool AI = check_ArgesIntern.Checked;
+                bool AK = check_ArgesKontakte.Checked;
+
+                if (AI && !AK) { folder = FolderArray[0]; }
+                else if (!AI && AK) { folder = FolderArray[1]; }
+                else if (AI && AK) { folder = FolderArray[0] + ";" + FolderArray[1]; }
+                else if (!AI && !AK) { folder = ""; }
+
+                lst_syncMailboxes.Items[selectedMailbox].SubItems[0].Text = txt_smtp.Text;
+                lst_syncMailboxes.Items[selectedMailbox].SubItems[1].Text = folder;
+                lst_syncMailboxes.Items[selectedMailbox].SubItems[2].Text = check_birthdays.Checked.ToString();
+                lst_syncMailboxes.Items[selectedMailbox].SubItems[3].Text = check_anniversaries.Checked.ToString();
+
+                if (check_disable.Checked)
+                {
+                    lst_syncMailboxes.Items[selectedMailbox].BackColor = Color.DarkGray;
+                    lst_syncMailboxes.Items[selectedMailbox].ForeColor = Color.DimGray;
+                }
+                else
+                {
+                    lst_syncMailboxes.Items[selectedMailbox].BackColor = SystemColors.Window;
+                    lst_syncMailboxes.Items[selectedMailbox].ForeColor = SystemColors.WindowText;
+                }
             }
 
-            lst_syncMailboxes.Refresh();
+
+            //lst_syncMailboxes.Refresh();
         }
 
         private void btn_saveConfig_Click(object sender, EventArgs e)
@@ -304,11 +290,6 @@ namespace ConfigEditor
 
             File.WriteAllText("config.cfg", cs);
             lbl_note.Text = "Config saved!";
-        }
-
-        private void txt_smextChanged(object sender, EventArgs e)
-        {
-
         }
     }
 

@@ -235,8 +235,12 @@ namespace Redemption
                                     {
                                         Matching result = matchingList.Find(x => x.PublicId == PublicId);
 
-                                        var BASync = new AppointmentSync(service, SMTPAdresse);
-                                        BASync.deleteName(result.Subject);
+                                        // Löscht nur die Geburtstage und Jahrestage bei Arges Intern Kontakten
+                                        if (ContactFolderName == "Arges Intern")
+                                        {
+                                            var BASync = new AppointmentSync(service, SMTPAdresse);
+                                            BASync.deleteName(result.Subject);
+                                        }
 
                                         Contact contacts = Contact.Bind(service, result.MailboxId);
                                         contacts.Delete(DeleteMode.HardDelete);
