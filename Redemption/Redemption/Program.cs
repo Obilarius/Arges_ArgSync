@@ -24,16 +24,45 @@ namespace Redemption
 
             foreach (var m in config.mailboxes)
             {
+                ExchangeSync.writeLog("---------- " + m.smtpAdresse.ToUpper() + " ----------");
                 ExchangeService service = ExchangeConnect(config.username, config.password, config.domain, m.smtpAdresse, config.exUri);
-                var SyncRun = new ExchangeSync(service, m.smtpAdresse, m.folder);
 
-                SyncRun.writePublicIdInExProp();
-                bool changes = SyncRun.Sync();
-
-                if (changes)
+                if (m.birthday || m.anniversary)
                 {
-                    MatchingList.Create(service, m.smtpAdresse, m.folder);
-                    ExchangeSync.writeLog("Matching List created: " + m.smtpAdresse + " - " + m.folder);
+                    ExchangeSync.writeLog("---------- SyncRun Start - Appointment ----------");
+                    Stopwatch sWatch = new Stopwatch();
+                    sWatch.Start();
+
+                    var BASync = new AppointmentSync(service, m.smtpAdresse);
+
+                    //BASync.runDelete();
+                    //BASync.deleteWithCategorie("automatically added from PF");
+
+                    if (m.birthday)
+                    {
+                        BASync.runBirthdaySync();
+                    }
+                    if (m.anniversary)
+                    {
+                        BASync.runAnniversarySync();
+                    }
+
+                    sWatch.Stop();
+                    ExchangeSync.writeLog("---------- SyncRun End - " + stopWatch.Elapsed + " ----------");
+                }
+
+
+                foreach (var f in m.folder)
+                {
+                    var SyncRun = new ExchangeSync(service, m.smtpAdresse, f);
+                    SyncRun.writePublicIdInExProp();
+                    bool changes = SyncRun.Sync();
+
+                    if (changes)
+                    {
+                        MatchingList.Create(service, m.smtpAdresse, f);
+                        ExchangeSync.writeLog("Matching List created: " + m.smtpAdresse + " - " + f);
+                    }
                 }
             }
 
@@ -91,7 +120,18 @@ namespace Redemption
                             else if (index == 2)
                             {
                                 var p = lines[i].Split(';');
-                                config.AddMailbox(p[0].Trim(' '), p[1].Trim(' '));
+                                List<string> folder = new List<string>();
+
+                                var smtp = p[0].Trim();
+                                var birthday = Convert.ToBoolean(p[1].Trim());
+                                var anni = Convert.ToBoolean(p[2].Trim());
+
+                                for (int k = 3; k < p.Length; k++)
+                                {
+                                    folder.Add(p[k].Trim());
+                                }
+
+                                config.AddMailbox(smtp, birthday, anni, folder);
                             }
                         }
                     }

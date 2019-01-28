@@ -33,7 +33,6 @@ namespace ConfigEditor
             txt_exUri.Enabled = false;
         }
 
-
         Config ReadConfig()
         {
             Config config = new Config();
@@ -71,7 +70,17 @@ namespace ConfigEditor
                             else if (index == 2)
                             {
                                 var p = lines[i].Split(';');
-                                config.AddMailbox(p[0].Trim(' '), p[1].Trim(' '));
+                                var smtp = p[0].Trim();
+                                var birthday = Convert.ToBoolean(p[1].Trim());
+                                var anniversary = Convert.ToBoolean(p[2].Trim());
+                                var folder = new List<string>();
+
+                                for (int j = 3; j < p.Length; j++)
+                                {
+                                    folder.Add(p[j].Trim());
+                                }
+
+                                config.AddMailbox(smtp, birthday, anniversary, folder);
                             }
                         }
                         else
@@ -79,8 +88,17 @@ namespace ConfigEditor
                             if (index == 2)
                             {
                                 var p = lines[i].Split(';');
-                                p[0] = p[0].Substring(1);
-                                config.AddMailbox(p[0].Trim(' '), p[1].Trim(' '), true);
+                                var smtp = p[0].Trim().Substring(1);
+                                var birthday = Convert.ToBoolean(p[1].Trim());
+                                var anniversary = Convert.ToBoolean(p[2].Trim());
+                                var folder = new List<string>();
+
+                                for (int j = 3; j < p.Length; j++)
+                                {
+                                    folder.Add(p[j].Trim());
+                                }
+
+                                config.AddMailbox(smtp, birthday, anniversary, folder, true);
                             }
                         }
                     }
@@ -106,7 +124,18 @@ namespace ConfigEditor
             
             foreach (var item in config.mailboxes)
             {
-                ListViewItem lvitem = new ListViewItem(new string[] { item.smtpAdresse, item.folder });
+                string folderStr = "";
+                for (int i = 0; i < item.folder.Count(); i++)
+                {
+                    folderStr += item.folder[i];
+                    if (i != item.folder.Count() - 1)
+                    {
+                        folderStr += ";";
+                    }
+                }
+
+
+                ListViewItem lvitem = new ListViewItem(new string[] { item.smtpAdresse, folderStr, item.birthday.ToString() , item.anniversary.ToString() });
 
                 if (item.disable)
                 {
@@ -122,19 +151,36 @@ namespace ConfigEditor
         {
             try
             {
+                txt_smtp.Text = "";
+                check_anniversaries.Checked = false;
+                check_birthdays.Checked = false;
+                check_ArgesIntern.Checked = false;
+                check_ArgesKontakte.Checked = false;
+
                 var selectedItem = lst_syncMailboxes.SelectedItems[0];
                 selectedMailbox = selectedItem.Index;
                 var smtp = selectedItem.SubItems[0].Text;
-                var folder = selectedItem.SubItems[1].Text;
+                var folder = selectedItem.SubItems[1].Text.Split(';');
 
                 txt_smtp.Text = smtp;
-                if (folder == FolderArray[0])
+
+
+                if (Array.IndexOf(folder, FolderArray[0]) > -1)
                 {
-                    radio_argesIntern.Checked = true;
+                    check_ArgesIntern.Checked = true;
                 }
-                else if (folder == FolderArray[1])
+                if (Array.IndexOf(folder, FolderArray[1]) > -1)
                 {
-                    radio_argesKontakte.Checked = true;
+                    check_ArgesKontakte.Checked = true;
+                }
+
+                if (selectedItem.SubItems[2].Text == "True")
+                {
+                    check_birthdays.Checked = true;
+                }
+                if (selectedItem.SubItems[3].Text == "True")
+                {
+                    check_anniversaries.Checked = true;
                 }
 
                 if (lst_syncMailboxes.Items[selectedMailbox].BackColor == Color.DarkGray)
@@ -156,31 +202,24 @@ namespace ConfigEditor
 
         private void btn_newSyncMailbox_Click(object sender, EventArgs e)
         {
-            
+            string folder = null;
+            bool AI = check_ArgesIntern.Checked;
+            bool AK = check_ArgesKontakte.Checked;
 
-            string radio = null;
-            if (radio_argesIntern.Checked)
-            {
-                radio = FolderArray[0];
-            }
-            else if (radio_argesKontakte.Checked)
-            {
-                radio = FolderArray[1];
-            }
+            if ( AI && !AK )     { folder = FolderArray[0]; }
+            else if (!AI && AK)  { folder = FolderArray[1]; }
+            else if (AI && AK)   { folder = FolderArray[0] + ";" + FolderArray[1]; }
+            else if (!AI && !AK) { folder = ""; }
 
-            if (radio != null)
-            {
-                lst_syncMailboxes.Items.Add(new ListViewItem(new string[] { txt_smtp.Text, radio}));
-                lst_syncMailboxes.Refresh();
+            lst_syncMailboxes.Items.Add(new ListViewItem(new string[] { txt_smtp.Text, folder, check_birthdays.Checked.ToString(), check_anniversaries.Checked.ToString() }));
+            lst_syncMailboxes.Refresh();
 
-                txt_smtp.Text = "";
-                radio_argesIntern.Checked = false;
-                radio_argesKontakte.Checked = false;
-                selectedMailbox = -10;
-            }
-
-            
-
+            txt_smtp.Text = "";
+            check_ArgesIntern.Checked = false;
+            check_ArgesKontakte.Checked = false;
+            check_birthdays.Checked = false;
+            check_anniversaries.Checked = false;
+            selectedMailbox = -10;
         }
 
         private void btn_deleteSyncMailbox_Click(object sender, EventArgs e)
@@ -190,9 +229,10 @@ namespace ConfigEditor
                 // new Item
                 case -10:
                     txt_smtp.Text = "";
-                    radio_argesIntern.Checked = false;
-                    radio_argesKontakte.Checked = false;
-                    check_disable.Checked = false;
+                    check_ArgesIntern.Checked = false;
+                    check_ArgesKontakte.Checked = false;
+                    check_birthdays.Checked = false;
+                    check_anniversaries.Checked = false;
                     selectedMailbox = -1;
                     break;
                 // no Item selected
@@ -202,28 +242,31 @@ namespace ConfigEditor
                 default:
                     lst_syncMailboxes.Items[selectedMailbox].Remove();
                     txt_smtp.Text = "";
-                    radio_argesIntern.Checked = false;
-                    radio_argesKontakte.Checked = false;
+                    check_ArgesIntern.Checked = false;
+                    check_ArgesKontakte.Checked = false;
+                    check_birthdays.Checked = false;
+                    check_anniversaries.Checked = false;
                     check_disable.Checked = false;
                     selectedMailbox = -1;
                     break;
             }
         }
 
-        private void btn_saveSyncMailbox_Click(object sender, EventArgs e)
+        private void saveSyncMailbox_Click(object sender, EventArgs e)
         {
-            string radio = null;
-            if (radio_argesIntern.Checked)
-            {
-                radio = FolderArray[0];
-            }
-            else if (radio_argesKontakte.Checked)
-            {
-                radio = FolderArray[1];
-            }
+            string folder = null;
+            bool AI = check_ArgesIntern.Checked;
+            bool AK = check_ArgesKontakte.Checked;
+
+            if (AI && !AK) { folder = FolderArray[0]; }
+            else if (!AI && AK) { folder = FolderArray[1]; }
+            else if (AI && AK) { folder = FolderArray[0] + ";" + FolderArray[1]; }
+            else if (!AI && !AK) { folder = ""; }
 
             lst_syncMailboxes.Items[selectedMailbox].SubItems[0].Text = txt_smtp.Text;
-            lst_syncMailboxes.Items[selectedMailbox].SubItems[1].Text = radio;
+            lst_syncMailboxes.Items[selectedMailbox].SubItems[1].Text = folder;
+            lst_syncMailboxes.Items[selectedMailbox].SubItems[2].Text = check_birthdays.Checked.ToString();
+            lst_syncMailboxes.Items[selectedMailbox].SubItems[3].Text = check_anniversaries.Checked.ToString();
 
             if (check_disable.Checked)
             {
@@ -251,15 +294,21 @@ namespace ConfigEditor
 
             foreach (ListViewItem item in lst_syncMailboxes.Items)
             {
+
                 if (item.BackColor == Color.DarkGray)
                 {
                     cs += "#";
                 }
-                cs += item.SubItems[0].Text + ";" + item.SubItems[1].Text + "\n";
+                cs += item.SubItems[0].Text + ";" + item.SubItems[2].Text + ";" + item.SubItems[3].Text + ";" + item.SubItems[1].Text + "\n";
             }
 
             File.WriteAllText("config.cfg", cs);
             lbl_note.Text = "Config saved!";
+        }
+
+        private void txt_smextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 

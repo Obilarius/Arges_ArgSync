@@ -11,19 +11,23 @@ namespace Redemption
         public string password, username, domain, exUri;
         public List<configMailboxes> mailboxes = new List<configMailboxes>();
 
-        public void AddMailbox(string v1, string v2)
+        public void AddMailbox(string smtpAdresse, bool birthday, bool anniversary, List<string> folder)
         {
-            mailboxes.Add(new configMailboxes(v1, v2));
+            mailboxes.Add(new configMailboxes(smtpAdresse, birthday, anniversary, folder));
         }
     }
 
     public class configMailboxes
     {
-        public string smtpAdresse, folder;
+        public string smtpAdresse;
+        public bool birthday, anniversary;
+        public List<string> folder = new List<string>();
 
-        public configMailboxes(string smtpAdresse, string folder)
+        public configMailboxes(string smtpAdresse, bool birthday, bool anniversary, List<string> folder)
         {
             this.smtpAdresse = smtpAdresse;
+            this.birthday = birthday;
+            this.anniversary = anniversary;
             this.folder = folder;
         }
     }

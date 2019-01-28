@@ -104,6 +104,10 @@ namespace LogViewer
                             lvi = new ListViewItem(new string[] { date, text });
                             lvi.ForeColor = Color.SaddleBrown;
                             break;
+                        case var someVal when new Regex(@"-+ [A-Z]+@[A-Z]+.[A-Z]+ -+").IsMatch(someVal):
+                            lvi = new ListViewItem(new string[] { date, text });
+                            lvi.BackColor = Color.DeepSkyBlue;
+                            break;
                         default:
                             lvi = new ListViewItem(new string[] { date, text });
                             break;

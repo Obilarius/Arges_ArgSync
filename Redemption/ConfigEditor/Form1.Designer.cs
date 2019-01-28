@@ -43,18 +43,23 @@
             this.lst_syncMailboxes = new System.Windows.Forms.ListView();
             this.SMTP_Adresse = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Folder = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.birthday = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.anniversary = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label1 = new System.Windows.Forms.Label();
             this.txt_smtp = new System.Windows.Forms.TextBox();
-            this.radio_argesIntern = new System.Windows.Forms.RadioButton();
-            this.radio_argesKontakte = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.btn_saveSyncMailbox = new System.Windows.Forms.Button();
+            this.check_ArgesKontakte = new System.Windows.Forms.CheckBox();
+            this.check_ArgesIntern = new System.Windows.Forms.CheckBox();
             this.btn_deleteSyncMailbox = new System.Windows.Forms.Button();
             this.btn_newSyncMailbox = new System.Windows.Forms.Button();
             this.btn_saveConfig = new System.Windows.Forms.Button();
             this.lbl_note = new System.Windows.Forms.Label();
             this.check_disable = new System.Windows.Forms.CheckBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.check_anniversaries = new System.Windows.Forms.CheckBox();
+            this.check_birthdays = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // lbl_serverSettings
@@ -133,7 +138,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txt_exUri.Location = new System.Drawing.Point(343, 55);
             this.txt_exUri.Name = "txt_exUri";
-            this.txt_exUri.Size = new System.Drawing.Size(233, 20);
+            this.txt_exUri.Size = new System.Drawing.Size(346, 20);
             this.txt_exUri.TabIndex = 9;
             // 
             // txt_domain
@@ -142,7 +147,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txt_domain.Location = new System.Drawing.Point(343, 32);
             this.txt_domain.Name = "txt_domain";
-            this.txt_domain.Size = new System.Drawing.Size(233, 20);
+            this.txt_domain.Size = new System.Drawing.Size(346, 20);
             this.txt_domain.TabIndex = 8;
             // 
             // btn_changeServerSettings
@@ -157,16 +162,19 @@
             // 
             // lst_syncMailboxes
             // 
-            this.lst_syncMailboxes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.lst_syncMailboxes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lst_syncMailboxes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.SMTP_Adresse,
-            this.Folder});
+            this.Folder,
+            this.birthday,
+            this.anniversary});
             this.lst_syncMailboxes.FullRowSelect = true;
             this.lst_syncMailboxes.GridLines = true;
             this.lst_syncMailboxes.Location = new System.Drawing.Point(15, 148);
             this.lst_syncMailboxes.Name = "lst_syncMailboxes";
-            this.lst_syncMailboxes.Size = new System.Drawing.Size(350, 290);
+            this.lst_syncMailboxes.Size = new System.Drawing.Size(421, 290);
             this.lst_syncMailboxes.TabIndex = 12;
             this.lst_syncMailboxes.UseCompatibleStateImageBehavior = false;
             this.lst_syncMailboxes.View = System.Windows.Forms.View.Details;
@@ -175,17 +183,29 @@
             // SMTP_Adresse
             // 
             this.SMTP_Adresse.Text = "SMTP Adresse";
-            this.SMTP_Adresse.Width = 200;
+            this.SMTP_Adresse.Width = 150;
             // 
             // Folder
             // 
             this.Folder.Text = "Folder";
-            this.Folder.Width = 145;
+            this.Folder.Width = 180;
+            // 
+            // birthday
+            // 
+            this.birthday.Text = "Birthday";
+            this.birthday.Width = 40;
+            // 
+            // anniversary
+            // 
+            this.anniversary.Text = "Anniversary";
+            this.anniversary.Width = 40;
             // 
             // label1
             // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(387, 148);
+            this.label1.Location = new System.Drawing.Point(449, 148);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(81, 13);
             this.label1.TabIndex = 13;
@@ -193,66 +213,56 @@
             // 
             // txt_smtp
             // 
-            this.txt_smtp.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txt_smtp.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txt_smtp.Location = new System.Drawing.Point(390, 165);
+            this.txt_smtp.Location = new System.Drawing.Point(452, 165);
             this.txt_smtp.Name = "txt_smtp";
-            this.txt_smtp.Size = new System.Drawing.Size(185, 20);
+            this.txt_smtp.Size = new System.Drawing.Size(236, 20);
             this.txt_smtp.TabIndex = 15;
-            // 
-            // radio_argesIntern
-            // 
-            this.radio_argesIntern.AutoSize = true;
-            this.radio_argesIntern.Location = new System.Drawing.Point(6, 24);
-            this.radio_argesIntern.Name = "radio_argesIntern";
-            this.radio_argesIntern.Size = new System.Drawing.Size(92, 17);
-            this.radio_argesIntern.TabIndex = 16;
-            this.radio_argesIntern.TabStop = true;
-            this.radio_argesIntern.Text = "ARGES Intern";
-            this.radio_argesIntern.UseVisualStyleBackColor = true;
-            // 
-            // radio_argesKontakte
-            // 
-            this.radio_argesKontakte.AutoSize = true;
-            this.radio_argesKontakte.Location = new System.Drawing.Point(6, 47);
-            this.radio_argesKontakte.Name = "radio_argesKontakte";
-            this.radio_argesKontakte.Size = new System.Drawing.Size(108, 17);
-            this.radio_argesKontakte.TabIndex = 17;
-            this.radio_argesKontakte.TabStop = true;
-            this.radio_argesKontakte.Text = "ARGES Kontakte";
-            this.radio_argesKontakte.UseVisualStyleBackColor = true;
+            this.txt_smtp.TextChanged += new System.EventHandler(this.saveSyncMailbox_Click);
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.radio_argesKontakte);
-            this.groupBox1.Controls.Add(this.radio_argesIntern);
-            this.groupBox1.Location = new System.Drawing.Point(391, 191);
+            this.groupBox1.Controls.Add(this.check_ArgesKontakte);
+            this.groupBox1.Controls.Add(this.check_ArgesIntern);
+            this.groupBox1.Location = new System.Drawing.Point(453, 191);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(185, 78);
+            this.groupBox1.Size = new System.Drawing.Size(117, 78);
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Folder";
             // 
-            // btn_saveSyncMailbox
+            // check_ArgesKontakte
             // 
-            this.btn_saveSyncMailbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_saveSyncMailbox.Location = new System.Drawing.Point(452, 316);
-            this.btn_saveSyncMailbox.Name = "btn_saveSyncMailbox";
-            this.btn_saveSyncMailbox.Size = new System.Drawing.Size(60, 52);
-            this.btn_saveSyncMailbox.TabIndex = 19;
-            this.btn_saveSyncMailbox.Text = "Save";
-            this.btn_saveSyncMailbox.UseVisualStyleBackColor = true;
-            this.btn_saveSyncMailbox.Click += new System.EventHandler(this.btn_saveSyncMailbox_Click);
+            this.check_ArgesKontakte.AutoSize = true;
+            this.check_ArgesKontakte.Location = new System.Drawing.Point(6, 42);
+            this.check_ArgesKontakte.Name = "check_ArgesKontakte";
+            this.check_ArgesKontakte.Size = new System.Drawing.Size(99, 17);
+            this.check_ArgesKontakte.TabIndex = 26;
+            this.check_ArgesKontakte.Text = "Arges Kontakte";
+            this.check_ArgesKontakte.UseVisualStyleBackColor = true;
+            this.check_ArgesKontakte.CheckedChanged += new System.EventHandler(this.saveSyncMailbox_Click);
+            // 
+            // check_ArgesIntern
+            // 
+            this.check_ArgesIntern.AutoSize = true;
+            this.check_ArgesIntern.Location = new System.Drawing.Point(6, 19);
+            this.check_ArgesIntern.Name = "check_ArgesIntern";
+            this.check_ArgesIntern.Size = new System.Drawing.Size(83, 17);
+            this.check_ArgesIntern.TabIndex = 25;
+            this.check_ArgesIntern.Text = "Arges Intern";
+            this.check_ArgesIntern.UseVisualStyleBackColor = true;
+            this.check_ArgesIntern.CheckedChanged += new System.EventHandler(this.saveSyncMailbox_Click);
             // 
             // btn_deleteSyncMailbox
             // 
-            this.btn_deleteSyncMailbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btn_deleteSyncMailbox.Location = new System.Drawing.Point(390, 316);
+            this.btn_deleteSyncMailbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_deleteSyncMailbox.Location = new System.Drawing.Point(452, 316);
             this.btn_deleteSyncMailbox.Name = "btn_deleteSyncMailbox";
-            this.btn_deleteSyncMailbox.Size = new System.Drawing.Size(60, 52);
+            this.btn_deleteSyncMailbox.Size = new System.Drawing.Size(118, 52);
             this.btn_deleteSyncMailbox.TabIndex = 20;
             this.btn_deleteSyncMailbox.Text = "Delete";
             this.btn_deleteSyncMailbox.UseVisualStyleBackColor = true;
@@ -260,10 +270,11 @@
             // 
             // btn_newSyncMailbox
             // 
-            this.btn_newSyncMailbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_newSyncMailbox.Location = new System.Drawing.Point(514, 316);
+            this.btn_newSyncMailbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_newSyncMailbox.Location = new System.Drawing.Point(572, 316);
             this.btn_newSyncMailbox.Name = "btn_newSyncMailbox";
-            this.btn_newSyncMailbox.Size = new System.Drawing.Size(60, 52);
+            this.btn_newSyncMailbox.Size = new System.Drawing.Size(115, 52);
             this.btn_newSyncMailbox.TabIndex = 21;
             this.btn_newSyncMailbox.Text = "New";
             this.btn_newSyncMailbox.UseVisualStyleBackColor = true;
@@ -271,12 +282,12 @@
             // 
             // btn_saveConfig
             // 
-            this.btn_saveConfig.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.btn_saveConfig.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_saveConfig.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_saveConfig.Location = new System.Drawing.Point(390, 374);
+            this.btn_saveConfig.Location = new System.Drawing.Point(452, 374);
             this.btn_saveConfig.Name = "btn_saveConfig";
-            this.btn_saveConfig.Size = new System.Drawing.Size(185, 64);
+            this.btn_saveConfig.Size = new System.Drawing.Size(236, 64);
             this.btn_saveConfig.TabIndex = 22;
             this.btn_saveConfig.Text = "Save Config";
             this.btn_saveConfig.UseVisualStyleBackColor = true;
@@ -293,25 +304,63 @@
             // 
             // check_disable
             // 
+            this.check_disable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.check_disable.AutoSize = true;
-            this.check_disable.Location = new System.Drawing.Point(390, 276);
+            this.check_disable.Location = new System.Drawing.Point(452, 276);
             this.check_disable.Name = "check_disable";
             this.check_disable.Size = new System.Drawing.Size(61, 17);
             this.check_disable.TabIndex = 24;
             this.check_disable.Text = "Disable";
             this.check_disable.UseVisualStyleBackColor = true;
+            this.check_disable.CheckedChanged += new System.EventHandler(this.saveSyncMailbox_Click);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.check_anniversaries);
+            this.groupBox2.Controls.Add(this.check_birthdays);
+            this.groupBox2.Location = new System.Drawing.Point(572, 191);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(117, 78);
+            this.groupBox2.TabIndex = 27;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Appointment";
+            // 
+            // check_anniversaries
+            // 
+            this.check_anniversaries.AutoSize = true;
+            this.check_anniversaries.Location = new System.Drawing.Point(6, 42);
+            this.check_anniversaries.Name = "check_anniversaries";
+            this.check_anniversaries.Size = new System.Drawing.Size(89, 17);
+            this.check_anniversaries.TabIndex = 26;
+            this.check_anniversaries.Text = "Anniversaries";
+            this.check_anniversaries.UseVisualStyleBackColor = true;
+            this.check_anniversaries.CheckedChanged += new System.EventHandler(this.saveSyncMailbox_Click);
+            // 
+            // check_birthdays
+            // 
+            this.check_birthdays.AutoSize = true;
+            this.check_birthdays.Location = new System.Drawing.Point(6, 19);
+            this.check_birthdays.Name = "check_birthdays";
+            this.check_birthdays.Size = new System.Drawing.Size(69, 17);
+            this.check_birthdays.TabIndex = 25;
+            this.check_birthdays.Text = "Birthdays";
+            this.check_birthdays.UseVisualStyleBackColor = true;
+            this.check_birthdays.CheckedChanged += new System.EventHandler(this.saveSyncMailbox_Click);
             // 
             // ConfigEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(594, 450);
+            this.ClientSize = new System.Drawing.Size(707, 450);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.check_disable);
             this.Controls.Add(this.lbl_note);
             this.Controls.Add(this.btn_saveConfig);
             this.Controls.Add(this.btn_newSyncMailbox);
             this.Controls.Add(this.btn_deleteSyncMailbox);
-            this.Controls.Add(this.btn_saveSyncMailbox);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.txt_smtp);
             this.Controls.Add(this.label1);
@@ -333,6 +382,8 @@
             this.Load += new System.EventHandler(this.ConfigEditor_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -356,15 +407,19 @@
         private System.Windows.Forms.ColumnHeader Folder;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txt_smtp;
-        private System.Windows.Forms.RadioButton radio_argesIntern;
-        private System.Windows.Forms.RadioButton radio_argesKontakte;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button btn_saveSyncMailbox;
         private System.Windows.Forms.Button btn_deleteSyncMailbox;
         private System.Windows.Forms.Button btn_newSyncMailbox;
         private System.Windows.Forms.Button btn_saveConfig;
         private System.Windows.Forms.Label lbl_note;
         private System.Windows.Forms.CheckBox check_disable;
+        private System.Windows.Forms.ColumnHeader anniversary;
+        private System.Windows.Forms.ColumnHeader birthday;
+        private System.Windows.Forms.CheckBox check_ArgesKontakte;
+        private System.Windows.Forms.CheckBox check_ArgesIntern;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.CheckBox check_anniversaries;
+        private System.Windows.Forms.CheckBox check_birthdays;
     }
 }
 
