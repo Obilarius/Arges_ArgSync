@@ -126,6 +126,8 @@ namespace Redemption
             CalendarView cView = new CalendarView(startDate, endDate);
             // Limit the properties returned to the appointment's subject, start time, and end time.
             cView.PropertySet = new PropertySet(AppointmentSchema.Subject, AppointmentSchema.Start, AppointmentSchema.End, AppointmentSchema.Categories);
+
+
             // Retrieve a collection of appointments by using the calendar view.
             FindItemsResults<Appointment> appointments = calendar.FindAppointments(cView);
 

@@ -36,8 +36,10 @@ namespace Redemption
                     var BASync = new AppointmentSync(service, m.smtpAdresse);
 
                     //BASync.runDelete();
-                    //BASync.deleteWithCategorie("automatically added from PF");
-
+                    if (config.delOldAppo)
+                    {
+                        BASync.deleteWithCategorie("automatically added from PF");
+                    }
                     if (m.birthday)
                     {
                         BASync.runBirthdaySync();
@@ -116,6 +118,7 @@ namespace Redemption
                                 if (lines[i].StartsWith("username")) config.username = Regex.Match(lines[i], pattern).Value;
                                 if (lines[i].StartsWith("domain")) config.domain = Regex.Match(lines[i], pattern).Value;
                                 if (lines[i].StartsWith("exUri")) config.exUri = Regex.Match(lines[i], pattern).Value;
+                                if (lines[i].StartsWith("delOldAppointments")) config.delOldAppo = Convert.ToBoolean(Regex.Match(lines[i], pattern).Value);
                             }
                             else if (index == 2)
                             {

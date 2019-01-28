@@ -9,6 +9,7 @@ namespace Redemption
     public class Config
     {
         public string password, username, domain, exUri;
+        public bool delOldAppo;
         public List<configMailboxes> mailboxes = new List<configMailboxes>();
 
         public void AddMailbox(string smtpAdresse, bool birthday, bool anniversary, List<string> folder)
