@@ -53,17 +53,19 @@ namespace Redemption
                     ExchangeSync.writeLog("---------- SyncRun End - " + stopWatch.Elapsed + " ----------");
                 }
 
-
-                foreach (var f in m.folder)
+                if (m.folder[0] != "")
                 {
-                    var SyncRun = new ExchangeSync(service, m.smtpAdresse, f);
-                    SyncRun.writePublicIdInExProp();
-                    bool changes = SyncRun.Sync();
-
-                    if (changes)
+                    foreach (var f in m.folder)
                     {
-                        MatchingList.Create(service, m.smtpAdresse, f);
-                        ExchangeSync.writeLog("Matching List created: " + m.smtpAdresse + " - " + f);
+                        var SyncRun = new ExchangeSync(service, m.smtpAdresse, f);
+                        SyncRun.writePublicIdInExProp();
+                        bool changes = SyncRun.Sync();
+
+                        if (changes)
+                        {
+                            MatchingList.Create(service, m.smtpAdresse, f);
+                            ExchangeSync.writeLog("Matching List created: " + m.smtpAdresse + " - " + f);
+                        }
                     }
                 }
             }
