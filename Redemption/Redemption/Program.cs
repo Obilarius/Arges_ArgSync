@@ -13,12 +13,18 @@ namespace Redemption
 {
     class Program
     {
+        /// <summary>
+        /// Config Datei wird eingelesen und für für jedes Postfach werden die Jahrestage und Geburtstage überprüft und syncroniesiert.
+        /// Danach werden die Kontakte Syncronisiert.
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             Config config = ReadConfig();
 
             ExchangeSync.writeLog("##################################################################");
 
+            /// <summary>Startet Stopuhr für den kompletten Sync über alle Postfächer.</summary>
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
@@ -74,6 +80,15 @@ namespace Redemption
             ExchangeSync.writeLog("Complete Sync - Time: " + stopWatch.Elapsed);
         }
 
+        /// <summary>
+        /// Hier wird eine Verbindung zum Exchange Server aufgebaut. Die Parameter werden aus der Config Datei geladen.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <param name="domain"></param>
+        /// <param name="smtpAdresse"></param>
+        /// <param name="exUri"></param>
+        /// <returns>Ein Objekt das eine Exchange Verbindung hält</returns>
         public static ExchangeService ExchangeConnect(string username, string password, string domain, string smtpAdresse, string exUri)
         {
             ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2013);
@@ -86,6 +101,11 @@ namespace Redemption
             return service;
         }
 
+
+        /// <summary>
+        /// Hier wird die Daten aus der Config.cfg eingelesen und in ein Config Objekt übersetzt.
+        /// </summary>
+        /// <returns>Ein Config Objekt</returns>
         static Config ReadConfig()
         {
             Config config = new Config();

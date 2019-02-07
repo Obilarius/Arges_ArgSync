@@ -10,7 +10,9 @@ using System.Xml.Serialization;
 
 namespace Redemption
 {
-
+    /// <summary>
+    /// Hier wird der Sync Status jedes eizelnen Postfachen überprüft und bei änderungen werden die Kontakte gelöscht, geupdatet oder hinzugefügt
+    /// </summary>
     public class ExchangeSync
     {
         ExchangeService service = null;
@@ -18,9 +20,17 @@ namespace Redemption
         String SMTPAdresse;
         String ContactFolderName;
 
-        public static String binaryPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName); // + @"\config.cfg";
+        /// <summary>
+        /// Die Variable beinhalten den Pfad zur Binary. (zb. um das einlesen der Config Datei relativ zu machen)
+        /// </summary>
+        public static string binaryPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName); // + @"\config.cfg";
 
-
+        /// <summary>
+        /// Konstruktor für die Klasse
+        /// </summary>
+        /// <param name="_service">Das ExchangeService Objekt</param>
+        /// <param name="_SMTPAdresse">Die SMTP Adresse des Postfachs</param>
+        /// <param name="_ContactFolderName">Der Name des Ordners (zb. "Arges Intern")</param>
         public ExchangeSync(ExchangeService _service, string _SMTPAdresse, string _ContactFolderName)
         {
             SMTPAdresse = _SMTPAdresse;
@@ -28,6 +38,34 @@ namespace Redemption
             service = _service;
         }
 
+
+        /// <summary>
+        /// <h2>Hauptfunktion</h2>
+        /// Hier werden die SyncStates der einzelnen Ordner verglichen und verarbeitet.
+        /// Das alles wird umspannt von einer Stopuhr um im Log eine Ausgabe zu haben wie viel Zeit für jeden SyncRun gebraucht wird.
+        /// <h3>LOCAL SYNC</h3>
+        /// Zuerst wird der Kontakt Ordner im Postfach bearbeitet.
+        /// Dazu wird der gespeicherte SyncStatus vom letzten Durchgang gelesen und mit dem aktuellen Status verglichen.
+        /// In einer Schleife wird dann über jede erfasste änderung gegangen und in verschiedenen if Abfragen verarbeitet.
+        /// Da die SyncStatus Abfrage nur 512 Änderungen zurückgibt, muss die Schleife so lange wiederholt werden bis es keine Änderungen mehr gibt.
+        /// <ul>
+        /// <li>Create : Kontakt wird wieder gelöscht</li>
+        /// <li>Update : Werden aktuell ignoriert da der ChacheModus von Outlook auch immer wieder Änderungen vornimmt.</li>
+        /// <li>Delete : Vom gelöschten Kontakt wird das public Pendant in der MatchingListe gesucht. Danach wird der Kontakt aus dem öffentlichen Ordner wieder kopiert.</li>
+        /// </ul>
+        /// <h3>PUBLIC SYNC</h3>
+        /// Als Zweites wird der öffentliche Ordner bearbeitet.
+        /// <i>siehe LOCAL SYNC</i>
+        /// <ul>
+        /// <li>Create : Kontakt wird in das Postfach kopiert.</li>
+        /// <li>Update : Kontakt wird in der MatchingListe gesucht. Pendant im Postfach wird gelöscht und aus dem öffentlichen Ordner wieder kopiert.</li>
+        /// <li>Delete : Kontakt wird in der MatchingListe gesucht. Pendant wird im Postfach gesucht und gelöscht. Es wird mit dem AppointmentSync der Jahrestag und Geburtstag aus dem Kalender gelöscht.</li>
+        /// </ul>
+        /// <h3>GET AND SET LOCAL SYNC</h3>
+        /// Hier wird noch mal über die Änderungen im Postfach Ordner gegangen aber nichts bearbeitet. Nach der Schleife wird der neue SyncStatus für das Postfach geschrieben.
+        /// Das muss im nach dem PUBLIC SYNC nochmal passieren das dur den PUBLIC SYNC änderungen am Postfach Ordner vorgenommen werden können.
+        /// </summary>
+        /// <returns></returns>
         public bool Sync()
         {
             var changeValue = false;
@@ -326,6 +364,12 @@ namespace Redemption
             return changeValue;
         }
 
+        /// <summary>
+        /// <b>(nicht benutzt)</b> Eine Hilfsfunktion die für alle Kontakte eine XML Datei erstellt hat mit Subject, UniqueId und ChankeKey 
+        /// </summary>
+        /// <param name="SMTPAdresse"></param>
+        /// <param name="Id"></param>
+        /// <param name="fileName"></param>
         public void makeChangeKey(string SMTPAdresse, FolderId Id, string fileName = "")
         {
             ItemView itemView = new ItemView(int.MaxValue);
@@ -347,6 +391,10 @@ namespace Redemption
             File.WriteAllText("ChangeKeys/" + SMTPAdresse + "-" + time +"-"+ fileName + ".xml", changeKeys);
         }
 
+        /// <summary>
+        /// Sucht im PublicRoot einen Ordner mit dem Namen aus der Config Datei (zb. "Arges Intern").
+        /// </summary>
+        /// <returns>Das Ordnerobjekt des Ordners mit dem richtigen Namen. Wird benutzt um den Ordner per Id zu binden.</returns>
         public Folder getPublicFolder()
         {
             var PublicRoot = Folder.Bind(service, WellKnownFolderName.PublicFoldersRoot);
@@ -355,6 +403,11 @@ namespace Redemption
             return FindPublicContactFolder.Folders[0];
         }
 
+        /// <summary>
+        /// Sucht im Kontakte Ordner des Postfaches einen Ordner mit dem Namen aus der Config Datei (zb. "Arges Intern"). Wird der Name nicht gefunden wird ein Ordner mit dem Namen erstellt.
+        /// </summary>
+        /// <param name="init">true wenn es der Initiale SyncRun ist.</param>
+        /// <returns>Das Ordnerobjekt des Ordners mit dem richtigen Namen. Wird benutzt um den Ordner per Id zu binden.</returns>
         public Folder getMailboxFolder(bool init = false)
         {
             var MailboxContactRoot = Folder.Bind(service, WellKnownFolderName.Contacts);
@@ -398,6 +451,12 @@ namespace Redemption
             return MailboxContactFolder;
         }
 
+        /// <summary>
+        /// Liest die SyncStates Datei zu jedem Pärchen aus Postfach und Ordner ein.
+        /// </summary>
+        /// <param name="isPublic">true = Die SyncState Dateien der öffentlichen Ordner erhalten ein Schlüsselwort in den Dateinamen</param>
+        /// <param name="smtpAdresse">Die SMTP Adresse des Postfachs</param>
+        /// <returns>Den gespeicherten SyncState vom letzten SyncRun</returns>
         public string getSyncState(bool isPublic, string smtpAdresse)
         {
             String SyncState = null;
@@ -419,6 +478,12 @@ namespace Redemption
             return SyncState;
         }
 
+        /// <summary>
+        /// Schreibt die SyncStates Datei zu jedem Pärchen aus Postfach und Ordner in den Unterordner SyncStates. Falls der Ordner nicht vorhanden ist wird er erstellt.
+        /// </summary>
+        /// <param name="syncState">Der SyncState als String der gespeichert werden soll.</param>
+        /// <param name="isPublic">true = Die SyncState Dateien der öffentlichen Ordner erhalten ein Schlüsselwort in den Dateinamen</param>
+        /// <param name="smtpAdresse">Die SMTP Adresse des Postfachs</param>
         public void writeSyncState(string syncState, bool isPublic, string smtpAdresse)
         {
             String path = binaryPath + @"\SyncStates\" + smtpAdresse + @"\" + ContactFolderName;
@@ -445,6 +510,11 @@ namespace Redemption
             File.WriteAllText(file.FullName, syncState);
         }
 
+
+        /// <summary>
+        /// Erstellt für jeden neuen Monat eine extra Log Datei und hängt den übergebenen Text an.
+        /// </summary>
+        /// <param name="logText">Text der an die Log Datei angehängt werden soll</param>
         public static void writeLog(string logText)
         {
             var path = binaryPath + @"\log";
@@ -459,12 +529,25 @@ namespace Redemption
             SyncStateWriter.Close();
         }
 
+        /// <summary>
+        /// Mappt eine Zahl von einem Zahlenblock in einen anderen (zb. 0-255 => 0-100) 
+        /// </summary>
+        /// <param name="value">Zahl die in den neuen Zahlenblock umgerechnet werden soll</param>
+        /// <param name="from1">Start Zahlenblock Quelle</param>
+        /// <param name="to1">Ende Zahlenblock Quelle</param>
+        /// <param name="from2">Start Zahlenblock Ziel</param>
+        /// <param name="to2">Ende Zahlenblock Ziel</param>
+        /// <returns>Berechnete Zahl im neuen Zahlenblock</returns>
         public float Remap(float value, float from1, float to1, float from2, float to2)
         {
             var val = (value - from1) / (to1 - from1) * (to2 - from2) + from2;
             return val;
         }
 
+        /// <summary>
+        /// <b>(nicht benutzt)</b> Zeigt einen Fortschrittsbalken auf der Console an.
+        /// </summary>
+        /// <param name="percent">Prozent die die Dargestellt werden soll</param>
         public void showProgressBar(int percent)
         {
             Console.SetCursorPosition(0, 1);
@@ -479,6 +562,11 @@ namespace Redemption
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Geht über alle Kontakte im öffentlichen Ordner und schreibt ihre UniqueId in ein neu angelegtes Feld "PublicID".
+        /// Beim Kopieren in das User Postfach bekommt jeder Kontakt eine neue UniqueId. Somit geht die Referenz zum Public Kontakt verloren. 
+        /// Um das zu verhindern wird dieses Feld benutzt. Somit hat man in jedem Kontakt des Postfaches immer die UniqueId des dazugehörigen Public Kontaktes.
+        /// </summary>
         public void writePublicIdInExProp()
         {
             if (service != null)
