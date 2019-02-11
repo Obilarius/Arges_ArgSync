@@ -12,6 +12,9 @@ using System.Windows.Forms;
 
 namespace LogViewer
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public partial class OpenLog : Form
     {
         public string logPath { get; set; }

@@ -11,6 +11,9 @@ using System.Diagnostics;
 
 namespace Redemption
 {
+    /// <summary>
+    /// Enstiegsklasse
+    /// </summary>
     class Program
     {
         /// <summary>
@@ -24,7 +27,6 @@ namespace Redemption
 
             ExchangeSync.writeLog("##################################################################");
 
-            /// <summary>Startet Stopuhr für den kompletten Sync über alle Postfächer.</summary>
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
@@ -41,7 +43,9 @@ namespace Redemption
 
                     var BASync = new AppointmentSync(service, m.smtpAdresse);
 
+                    // Aktiviren wenn alle Termine gelöscht werden sollen
                     //BASync.runDelete();
+
                     if (config.delOldAppo)
                     {
                         BASync.deleteWithCategorie("automatically added from PF");

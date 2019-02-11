@@ -13,11 +13,20 @@ namespace Redemption
     /// <summary>
     /// Hier wird der Sync Status jedes eizelnen Postfachen überprüft und bei änderungen werden die Kontakte gelöscht, geupdatet oder hinzugefügt
     /// </summary>
-    public class ExchangeSync
+    class ExchangeSync
     {
+        /// <summary>
+        /// Das ExchangeService Objekt wird hier gespeichert um es in der ganzen Klasse zu nutzen.
+        /// </summary>
         ExchangeService service = null;
 
+        /// <summary>
+        /// Die SMTP Adresse des Postfaches das aktuell synchronisiert wird.
+        /// </summary>
         String SMTPAdresse;
+        /// <summary>
+        /// Der Name des Ordners der aktuell synchronisiert wird (standardmäßig "Arges Intern").
+        /// </summary>
         String ContactFolderName;
 
         /// <summary>
@@ -65,7 +74,7 @@ namespace Redemption
         /// Hier wird noch mal über die Änderungen im Postfach Ordner gegangen aber nichts bearbeitet. Nach der Schleife wird der neue SyncStatus für das Postfach geschrieben.
         /// Das muss im nach dem PUBLIC SYNC nochmal passieren das dur den PUBLIC SYNC änderungen am Postfach Ordner vorgenommen werden können.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Gibt zurück ob min. eine Änderung gemacht worden ist</returns>
         public bool Sync()
         {
             var changeValue = false;

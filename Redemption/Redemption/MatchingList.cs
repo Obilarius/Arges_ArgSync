@@ -8,13 +8,25 @@ using System.Threading.Tasks;
 
 namespace Redemption
 {
+    /// <summary>
+    /// Die Klasse wird verwendet um eine Matchingliste zu speichern oder einzulesen.
+    /// </summary>
     public class MatchingList
     {
+        /// <summary>
+        /// Läuft mit einer Schleife über alle Kontakte im Ordner (zb. "Arges Intern") des Postfaches.
+        /// Es wird das Subject, UniqueId und das externe Feld "PublicID" ausgelesen und als Matching in einer Liste gespeichert.
+        /// Nach der Schleife wird überprüft ob der Ordner "MatchingList" vorhanden ist, falls nicht wird er erstellt,
+        /// und die Liste mit Matchings wird über die Klasse XMLReader in eine Datei gespeichert. <br/>
+        /// <i>Die Listen werden verwendet um zu jedem Kontakt in jedem Postfach sein Pendant aus dem öffentlichen Ordner zu finden.</i>
+        /// </summary>
+        /// <param name="service">Das ExchangeService Objekt</param>
+        /// <param name="SMTPAdresse">Die SMTP Adresse</param>
+        /// <param name="ContactFolderName">Der Name der Ordners (zb. "Arges Intern")</param>
         public static void Create (ExchangeService service, string SMTPAdresse, string ContactFolderName)
         {
             if (service != null)
             {
-
                 var path = ExchangeSync.binaryPath + @"\MatchingList\" + SMTPAdresse + "_" + ContactFolderName + "_matchingList.xml";
 
                 var PublicRoot = Folder.Bind(service, WellKnownFolderName.Contacts);
@@ -63,6 +75,12 @@ namespace Redemption
             }
         }
 
+        /// <summary>
+        /// Liest über die Klasse XMLReader die Matchingliste ein.
+        /// </summary>
+        /// <param name="SMTPAdresse">Die SMTP Adresse</param>
+        /// <param name="ContactFolderName">Der Name der Ordners (zb. "Arges Intern")</param>
+        /// <returns></returns>
         public static List<Matching> GetList (string SMTPAdresse, string ContactFolderName)
         {
             var path = ExchangeSync.binaryPath + @"\MatchingList\" + SMTPAdresse + "_" + ContactFolderName + "_matchingList.xml";
@@ -73,15 +91,35 @@ namespace Redemption
         }
     }
 
+    /// <summary>
+    /// Stellt die einzelnen Einträge einer MatchinListe dar.
+    /// </summary>
     public class Matching
     {
+        /// <summary>
+        /// Die UniqueId die der Kontakt im Postfach hat.
+        /// </summary>
         public string MailboxId { get; set; }
+        /// <summary>
+        /// Dei UniqueId die der Kontakt im öffentlichen Ordner hat.
+        /// </summary>
         public string PublicId { get; set; }
+        /// <summary>
+        /// Subject des Kontaktes.
+        /// </summary>
         public string Subject { get; set; }
 
-        // Konstruktoren 
+        /// <summary>
+        /// Kontruktor
+        /// </summary>
         public Matching() { }
 
+        /// <summary>
+        /// Kontruktor
+        /// </summary>
+        /// <param name="subject">Subject des Kontaktes.</param>
+        /// <param name="publicId">Dei UniqueId die der Kontakt im öffentlichen Ordner hat.</param>
+        /// <param name="mailboxId">Die UniqueId die der Kontakt im Postfach hat.</param>
         public Matching(string subject, string publicId, string mailboxId)
         {
             this.Subject = subject;

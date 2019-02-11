@@ -10,8 +10,14 @@ using System.Windows.Forms;
 using System.IO;
 using System.Text.RegularExpressions;
 
+/// <summary>
+/// NAMESPACE LogViewer
+/// </summary>
 namespace LogViewer
 {
+    /// <summary>
+    /// Hauptfester
+    /// </summary>
     public partial class Form1 : Form
     {
         string path;
@@ -19,11 +25,19 @@ namespace LogViewer
         FileSystemWatcher watcher;
         DateTime lastOpenLog;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Form1()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_openFileDialog_Click(object sender, EventArgs e)
         {
             using (OpenLog openLogForm = new OpenLog())
@@ -51,6 +65,11 @@ namespace LogViewer
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
         private void OnChanged(object source, FileSystemEventArgs e)
         {
             openLog();
@@ -58,6 +77,9 @@ namespace LogViewer
             lbl_openTime.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void openLog ()
         {
             TimeSpan ts = lastOpenLog - DateTime.Now;
@@ -126,6 +148,11 @@ namespace LogViewer
             lastOpenLog = DateTime.Now;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static IEnumerable<string> ReadLines(string path)
         {
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x1000, FileOptions.SequentialScan))

@@ -8,8 +8,16 @@ using System.Xml.Linq;
 
 namespace Redemption
 {
+    /// <summary>
+    /// Klasse die System.Xml.Linq benutzt um XML Objekte zu erstellen und diese im Filesystem zu speichern oder zu laden.
+    /// </summary>
     class XMLReader
     {
+        /// <summary>
+        /// Bekommt eine Liste von Matchings und übersetzt sie in XML Elemente. Speichert danach die Datei unter dem übergebenen Pfad.
+        /// </summary>
+        /// <param name="path">Der Pfad in dem die XML Datei gespeichert werden soll.</param>
+        /// <param name="list">Die Liste an Matchings die gespeichert werden soll</param>
         public static void saveToXml (string path, List<Matching> list)
         {
             try
@@ -40,6 +48,11 @@ namespace Redemption
             }
         }
 
+        /// <summary>
+        /// Eine XML Datei wird eingelesen und in Matchings übersetzt.
+        /// </summary>
+        /// <param name="path">Der Pfad der XML Datei die eingelesen werden soll.</param>
+        /// <returns>Eine Liste von Matchings</returns>
         public static List<Matching> readFromXml (string path)
         {
             List<Matching> _list = null;
