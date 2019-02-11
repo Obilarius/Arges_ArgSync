@@ -307,7 +307,7 @@ namespace Redemption
                         appo.Subject = BirthdayOrAnniversary == 0 ? age + ". Geburtstag von " + item.Subject : age + ". Jahrestag von " + item.Subject;
                         appo.Start = BirthDayValue;
                         appo.End = appo.Start.AddHours(1);
-                        appo.IsAllDayEvent = true;
+                        appo.IsAllDayEvent = true; 
                         appo.IsReminderSet = false;
                         appo.LegacyFreeBusyStatus = 0;
 
