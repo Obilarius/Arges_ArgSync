@@ -138,7 +138,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txt_exUri.Location = new System.Drawing.Point(343, 55);
             this.txt_exUri.Name = "txt_exUri";
-            this.txt_exUri.Size = new System.Drawing.Size(346, 20);
+            this.txt_exUri.Size = new System.Drawing.Size(366, 20);
             this.txt_exUri.TabIndex = 9;
             // 
             // txt_domain
@@ -147,7 +147,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txt_domain.Location = new System.Drawing.Point(343, 32);
             this.txt_domain.Name = "txt_domain";
-            this.txt_domain.Size = new System.Drawing.Size(346, 20);
+            this.txt_domain.Size = new System.Drawing.Size(366, 20);
             this.txt_domain.TabIndex = 8;
             // 
             // btn_changeServerSettings
@@ -174,7 +174,8 @@
             this.lst_syncMailboxes.GridLines = true;
             this.lst_syncMailboxes.Location = new System.Drawing.Point(15, 148);
             this.lst_syncMailboxes.Name = "lst_syncMailboxes";
-            this.lst_syncMailboxes.Size = new System.Drawing.Size(421, 290);
+            this.lst_syncMailboxes.Size = new System.Drawing.Size(441, 472);
+            this.lst_syncMailboxes.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lst_syncMailboxes.TabIndex = 12;
             this.lst_syncMailboxes.UseCompatibleStateImageBehavior = false;
             this.lst_syncMailboxes.View = System.Windows.Forms.View.Details;
@@ -193,19 +194,19 @@
             // birthday
             // 
             this.birthday.Text = "Birthday";
-            this.birthday.Width = 40;
+            this.birthday.Width = 51;
             // 
             // anniversary
             // 
             this.anniversary.Text = "Anniversary";
-            this.anniversary.Width = 40;
+            this.anniversary.Width = 55;
             // 
             // label1
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(449, 148);
+            this.label1.Location = new System.Drawing.Point(469, 148);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(81, 13);
             this.label1.TabIndex = 13;
@@ -215,7 +216,7 @@
             // 
             this.txt_smtp.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txt_smtp.Location = new System.Drawing.Point(452, 165);
+            this.txt_smtp.Location = new System.Drawing.Point(472, 165);
             this.txt_smtp.Name = "txt_smtp";
             this.txt_smtp.Size = new System.Drawing.Size(236, 20);
             this.txt_smtp.TabIndex = 15;
@@ -223,11 +224,10 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.check_ArgesKontakte);
             this.groupBox1.Controls.Add(this.check_ArgesIntern);
-            this.groupBox1.Location = new System.Drawing.Point(453, 191);
+            this.groupBox1.Location = new System.Drawing.Point(473, 191);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(117, 78);
             this.groupBox1.TabIndex = 18;
@@ -258,9 +258,8 @@
             // 
             // btn_deleteSyncMailbox
             // 
-            this.btn_deleteSyncMailbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_deleteSyncMailbox.Location = new System.Drawing.Point(452, 316);
+            this.btn_deleteSyncMailbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_deleteSyncMailbox.Location = new System.Drawing.Point(472, 498);
             this.btn_deleteSyncMailbox.Name = "btn_deleteSyncMailbox";
             this.btn_deleteSyncMailbox.Size = new System.Drawing.Size(118, 52);
             this.btn_deleteSyncMailbox.TabIndex = 20;
@@ -270,9 +269,8 @@
             // 
             // btn_newSyncMailbox
             // 
-            this.btn_newSyncMailbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_newSyncMailbox.Location = new System.Drawing.Point(572, 316);
+            this.btn_newSyncMailbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_newSyncMailbox.Location = new System.Drawing.Point(592, 498);
             this.btn_newSyncMailbox.Name = "btn_newSyncMailbox";
             this.btn_newSyncMailbox.Size = new System.Drawing.Size(115, 52);
             this.btn_newSyncMailbox.TabIndex = 21;
@@ -282,10 +280,9 @@
             // 
             // btn_saveConfig
             // 
-            this.btn_saveConfig.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_saveConfig.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_saveConfig.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_saveConfig.Location = new System.Drawing.Point(452, 374);
+            this.btn_saveConfig.Location = new System.Drawing.Point(472, 556);
             this.btn_saveConfig.Name = "btn_saveConfig";
             this.btn_saveConfig.Size = new System.Drawing.Size(236, 64);
             this.btn_saveConfig.TabIndex = 22;
@@ -304,10 +301,9 @@
             // 
             // check_disable
             // 
-            this.check_disable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.check_disable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.check_disable.AutoSize = true;
-            this.check_disable.Location = new System.Drawing.Point(452, 276);
+            this.check_disable.Location = new System.Drawing.Point(472, 276);
             this.check_disable.Name = "check_disable";
             this.check_disable.Size = new System.Drawing.Size(61, 17);
             this.check_disable.TabIndex = 24;
@@ -317,11 +313,10 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.check_anniversaries);
             this.groupBox2.Controls.Add(this.check_birthdays);
-            this.groupBox2.Location = new System.Drawing.Point(572, 191);
+            this.groupBox2.Location = new System.Drawing.Point(592, 191);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(117, 78);
             this.groupBox2.TabIndex = 27;
@@ -354,7 +349,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(707, 450);
+            this.ClientSize = new System.Drawing.Size(727, 632);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.check_disable);
             this.Controls.Add(this.lbl_note);

@@ -174,7 +174,7 @@ namespace ConfigEditor
                 check_disable.Checked = lst_syncMailboxes.Items[selectedMailbox].BackColor == Color.DarkGray ? true : false;
                 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 //throw;
@@ -184,23 +184,31 @@ namespace ConfigEditor
 
         private void btn_newSyncMailbox_Click(object sender, EventArgs e)
         {
-            string folder = null;
-            bool AI = check_ArgesIntern.Checked;
-            bool AK = check_ArgesKontakte.Checked;
+            //string folder = null;
+            //bool AI = check_ArgesIntern.Checked;
+            //bool AK = check_ArgesKontakte.Checked;
 
-            if ( AI && !AK )     { folder = FolderArray[0]; }
-            else if (!AI && AK)  { folder = FolderArray[1]; }
-            else if (AI && AK)   { folder = FolderArray[0] + ";" + FolderArray[1]; }
-            else if (!AI && !AK) { folder = ""; }
+            //if ( AI && !AK )     { folder = FolderArray[0]; }
+            //else if (!AI && AK)  { folder = FolderArray[1]; }
+            //else if (AI && AK)   { folder = FolderArray[0] + ";" + FolderArray[1]; }
+            //else if (!AI && !AK) { folder = ""; }
 
-            lst_syncMailboxes.Items.Add(new ListViewItem(new string[] { txt_smtp.Text, folder, check_birthdays.Checked.ToString(), check_anniversaries.Checked.ToString() }));
+            //lst_syncMailboxes.Items.Add(new ListViewItem(new string[] { txt_smtp.Text, folder, check_birthdays.Checked.ToString(), check_anniversaries.Checked.ToString() }));
+            ListViewItem ret = lst_syncMailboxes.Items.Add(new ListViewItem(new string[] { "", "", "False", "False" }));
             lst_syncMailboxes.Refresh();
 
-            txt_smtp.Text = "";
-            check_ArgesIntern.Checked = false;
-            check_ArgesKontakte.Checked = false;
-            check_birthdays.Checked = false;
-            check_anniversaries.Checked = false;
+            foreach (ListViewItem item in lst_syncMailboxes.Items)
+            {
+                item.Selected = false;
+            }
+
+            lst_syncMailboxes.Items[0].Selected = true;
+
+            //txt_smtp.Text = "";
+            //check_ArgesIntern.Checked = false;
+            //check_ArgesKontakte.Checked = false;
+            //check_birthdays.Checked = false;
+            //check_anniversaries.Checked = false;
             selectedMailbox = -10;
         }
 
@@ -223,12 +231,12 @@ namespace ConfigEditor
                 // Item selected
                 default:
                     lst_syncMailboxes.Items[selectedMailbox].Remove();
-                    txt_smtp.Text = "";
-                    check_ArgesIntern.Checked = false;
-                    check_ArgesKontakte.Checked = false;
-                    check_birthdays.Checked = false;
-                    check_anniversaries.Checked = false;
-                    check_disable.Checked = false;
+                    //txt_smtp.Text = "";
+                    //check_ArgesIntern.Checked = false;
+                    //check_ArgesKontakte.Checked = false;
+                    //check_birthdays.Checked = false;
+                    //check_anniversaries.Checked = false;
+                    //check_disable.Checked = false;
                     selectedMailbox = -1;
                     break;
             }
