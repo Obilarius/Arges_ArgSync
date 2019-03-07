@@ -262,7 +262,7 @@ namespace Redemption
                                 }
                                 catch (Exception ex)
                                 {
-                                    writeLog("ERROR: ExchangeSync.cs - 179: " + ex.Message);
+                                    writeLog("ERROR: ExchangeSync.cs - 179: " + ic.Item.Subject + " - " + ex.Message);
                                 }
 
                                 //Console.WriteLine(SMTPAdresse + " - " + index + " - PublicChange " + contacts.Subject + " was updated in public and updated in the mailbox");
