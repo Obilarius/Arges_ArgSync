@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Exchange.WebServices.Data;
+using System;
 using System.Collections.Generic;
 using System.DirectoryServices.AccountManagement;
 using System.Linq;
@@ -11,31 +12,19 @@ namespace ADtoEXSync
     {
         static void Main(string[] args)
         {
-        }
+            List<UserPrincipal> allADUsers = ADWorker.GetAllRelevantADUsers("ARGES", "OU=Arges_Intern,DC=arges,DC=local");
 
+            ExchangeService exService = EXWorker.ExchangeConnect("redemption", "redemption", "arges", "walzenbach@arges.de", "https://helios.arges.local/EWS/Exchange.asmx");
 
-        List<UserPrincipal> GetAllRelevantADUsers()
-        {
-            PrincipalContext ctx = new PrincipalContext(ContextType.Domain, "ARGES", "OU=Arges_Intern,DC=arges,DC=local");
-            UserPrincipal qbeUser = new UserPrincipal(ctx);
-            PrincipalSearcher srch = new PrincipalSearcher(qbeUser);
+            Folder folder = EXWorker.GetMailboxFolder(exService, "ADSyncTest");
 
-
-
-            List<UserPrincipal> allUsers = new List<UserPrincipal>();
-            // find all matches
-            foreach (var found in srch.FindAll())
+            foreach (var user in allADUsers)
             {
-                UserPrincipal user = found as UserPrincipal;
-
-                var countOU = 0;
-                foreach (var item in user.DistinguishedName.Split(','))
-                    countOU += (item.StartsWith("OU=")) ? 1 : 0;
-
-                if (countOU == 1 && user.Surname != null) allUsers.Add(user);
+                //if(user.Surname == "Walzenbach")
+                    EXWorker.CreateContact(exService, folder, user);
             }
+            
 
-            return allUsers;
         }
     }
 }
