@@ -27,7 +27,7 @@ namespace ADtoEXSync
                 foreach (var item in user.DistinguishedName.Split(','))
                     countOU += (item.StartsWith("OU=")) ? 1 : 0;
 
-                if (countOU == 1 && user.Surname != null) allUsers.Add(user);
+                if (countOU == 1 && user.Surname != null && user.Enabled == true) allUsers.Add(user);
             }
 
             return allUsers;
