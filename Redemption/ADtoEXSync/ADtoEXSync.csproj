@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="ADWorker.cs" />
     <Compile Include="EXWorker.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
