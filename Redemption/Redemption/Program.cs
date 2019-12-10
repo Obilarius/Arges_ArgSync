@@ -59,7 +59,7 @@ namespace Redemption
                     ExchangeSync.writeLog("---------- SyncRun End - " + stopWatch.Elapsed + " ----------");
                 }
 
-                if (m.folder[0] != "")
+                if (m.folder.Count > 0 && m.folder[0] != "")
                 {
                     foreach (var f in m.folder)
                     {
