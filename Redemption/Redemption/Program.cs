@@ -46,10 +46,6 @@ namespace Redemption
                     // Aktiviren wenn alle Termine gelöscht werden sollen
                     //BASync.runDelete();
 
-                    if (config.delOldAppo)
-                    {
-                        BASync.deleteWithCategorie("automatically added from PF");
-                    }
                     if (m.birthday)
                     {
                         BASync.runBirthdaySync();

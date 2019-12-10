@@ -86,7 +86,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BirthdaySync.cs" />
+    <Compile Include="AppointmentSync.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="MatchingList.cs" />
     <Compile Include="Program.cs" />
